@@ -6,3 +6,6 @@ CMakeFiles/*
 
 # Executable
 dhips
+
+# VIM swap files
+*.swp
