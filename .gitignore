@@ -9,3 +9,6 @@ dhips
 
 # VIM swap files
 *.swp
+
+# Shell Scripts
+open_code.sh
