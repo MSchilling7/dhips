@@ -12,3 +12,6 @@ dhips
 
 # Shell Scripts
 open_code.sh
+
+#ROOT output files
+*.root
