@@ -1,5 +1,14 @@
 #include "DetectorConstruction.hh"
 
+// Sensitive Detectors
+#include "EnergyDepositionSD.hh"
+#include "ParticleSD.hh"
+#include "SecondarySD.hh"
+//Detectors
+#include "Germanium1_TUD.hh"
+#include "Germanium2_TUD.hh"
+#include "Polarimeter_TUD.hh"
+#include "BGO.hh"
 // Materials
 #include "G4Material.hh"
 #include "G4NistManager.hh"
@@ -16,16 +25,13 @@
 #include "G4VisAttributes.hh"
 #include "globals.hh"
 
-// Sensitive Detectors
-#include "EnergyDepositionSD.hh"
-#include "ParticleSD.hh"
-#include "SecondarySD.hh"
 
 // Units
 #include "G4PhysicalConstants.hh"
 #include "G4SystemOfUnits.hh"
 
 #include <sstream>
+
 
 using std::stringstream;
 
@@ -83,10 +89,11 @@ G4VPhysicalVolume *DetectorConstruction::Construct() {
 	G4double block_z = 95. * mm;   //z lies in the direction of the beam
 
 
-
+// These boxes are declared here for later use. They are used to make tubs out of them.
 	G4Box *blockwithouthole = new G4Box("blockwithouthole", block_x / 2, block_y / 2, block_z / 2);
-	
-
+	G4Box *tubeblock1 = new G4Box("tubeblock1",15.5*cm,15.5*cm,1*cm);
+    G4Box *tubeblock2 = new G4Box("tubeblock2",15.5*cm,15.5*cm,8.5*cm);
+    G4Box *tubeblock3 = new G4Box("tubeblock3",15.5*cm,15.5*cm,5.25*cm);
 // Variable for collimator hole radius
 G4double colholeradius_min=6. * mm;
 G4double colholeradius_max=10. * mm;
@@ -180,7 +187,7 @@ block21 =
 	new G4PVPlacement(0, G4ThreeVector(25.*cm, -15.*cm,-distcollimatortotarget-
 	(10 * block_z+10.*cm)*0.5 ), block21_Logical, "block", world_log, 0, 0);
 //End of Block21--------------------------------------------------------
-// /control/execute init_vis.mac
+
 //Beginning Block 22-----------------------------------------
 G4LogicalVolume *block22_Logical;
 G4Box *block22; 
@@ -233,7 +240,7 @@ block24 =
 //End Block 24---------------------------------------
 
 
-
+/************************* Lead Shielding *****************/
 
 //Right Leadwall (From the perspective of the wall)
 // The Wall stars at the same z-coordinate as the collimator and is 20cm long for 1m
@@ -242,9 +249,9 @@ block24 =
 G4LogicalVolume *block31_Logical;
 G4Box *block31; 
 G4VisAttributes *block31vis;
-// DIE WAND 3Xer sind noch net feritg!!!!!!!!!!!
+
 block31 =
-	    new G4Box("block31",10*cm,40*cm, ((-50. * mm)+10 * block_z )*0.5);
+	    new G4Box("block31",10*cm,40*cm, 50*cm);
 
   block31_Logical =
 	    new G4LogicalVolume(block31, Pb, "block31_Logical", 0, 0, 0);
@@ -252,9 +259,26 @@ block31 =
 	block31_Logical->SetVisAttributes(block31vis);
 	
 		new G4PVPlacement(0, G4ThreeVector(-45*cm, -15*cm,-distcollimatortotarget-
-	(10 * block_z-5.*cm)*0.5 ), block31_Logical, "block", world_log, 0, 0);
+	95*cm+50*cm), block31_Logical, "block", world_log, 0, 0);
 //End Block 31---------------------------------------
 
+//Second part of the wall is only 5cm thick and continues for 81cm until the back wall.
+//Beginning Block 32-------------------------------------
+G4LogicalVolume *block32_Logical;
+G4Box *block32; 
+G4VisAttributes *block32vis;
+
+block32 =
+	    new G4Box("block32",25*mm,40*cm, 40.5*cm);
+
+  block32_Logical =
+	    new G4LogicalVolume(block32, Pb, "block32_Logical", 0, 0, 0);
+	block32vis = new G4VisAttributes(leadcolor);
+	block32_Logical->SetVisAttributes(block32vis);
+	
+		new G4PVPlacement(0, G4ThreeVector(-37.5*cm, -15*cm,-distcollimatortotarget-
+	95*cm+50*cm+90.5*cm), block32_Logical, "block", world_log, 0, 0);
+//End Block 32---------------------------------------
 
 //Above the iron shielding sits a layer of lead that is 30cm thick
 //Beginning Block 41-------------------------------------
@@ -263,14 +287,14 @@ G4Box *block41;
 G4VisAttributes *block41vis;
 
 block41 =
-	    new G4Box("block41",55*cm,15*cm, 190*cm);
+	    new G4Box("block41",55*cm+45*cm,15*cm, 90.5*cm);
 
   block41_Logical =
 	    new G4LogicalVolume(block41, Pb, "block41_Logical", 0, 0, 0);
-	block41vis = new G4VisAttributes(leadcolor);
+	block41vis = new G4VisAttributes(grey);
 	block41_Logical->SetVisAttributes(block41vis);
 	
-		new G4PVPlacement(0, G4ThreeVector(0, 40.*cm,-distcollimatortotarget), block41_Logical, "block", world_log, 0, 0);
+		new G4PVPlacement(0, G4ThreeVector(45*cm, 40.*cm,0-distcollimatortotarget-95*cm+90.5*cm), block41_Logical, "block", world_log, 0, 0);
 //End Block 41---------------------------------------
 
 
@@ -281,16 +305,230 @@ G4Box *block51;
 G4VisAttributes *block51vis;
 
 block51 =
-	    new G4Box("block51",55*cm,10*cm, 190*cm);
+	    new G4Box("block51",180*cm,10*cm, 90.5*cm);
 
   block51_Logical =
 	    new G4LogicalVolume(block51, Pb, "block51_Logical", 0, 0, 0);
-	block51vis = new G4VisAttributes(leadcolor);
+	block51vis = new G4VisAttributes(grey);
 	block51_Logical->SetVisAttributes(block51vis);
 	
-		new G4PVPlacement(0, G4ThreeVector(0, -65.*cm,-distcollimatortotarget), block51_Logical, "block", world_log, 0, 0);
+		new G4PVPlacement(0, G4ThreeVector(0, -65.*cm,-distcollimatortotarget-95*cm+90.5*cm), block51_Logical, "block", world_log, 0, 0);
 //End Block 51---------------------------------------
 
+//Chamber on the right side
+// The first wall. It is 6cm in front of the Cone, 10cm deep and 25cm high. It stars
+// directly at the thinner wall Element from Block32 
+//Beginning Block 61-------------------------------------
+G4LogicalVolume *block61_Logical;
+G4Box *block61; 
+G4VisAttributes *block61vis;
+
+block61 =
+	    new G4Box("block61",40*cm,12.5*cm, 5*cm);
+
+  block61_Logical =
+	    new G4LogicalVolume(block61, Pb, "block61_Logical", 0, 0, 0);
+	block61vis = new G4VisAttributes(leadcolor);
+	block61_Logical->SetVisAttributes(block61vis);
+	
+		new G4PVPlacement(0, G4ThreeVector(-40*cm-40*cm, -15*cm-40*cm+12.5*cm,-distcollimatortotarget-
+	95*cm+5*cm+90.5*cm+27*cm), block61_Logical, "block", world_log, 0, 0);
+//End Block 61---------------------------------------
+
+// The second wall. It is 6 behind the Cone, 10cm deep and 25cm high. It stars
+// directly at the thinner wall Element from Block32 
+//Beginning Block 62-------------------------------------
+G4LogicalVolume *block62_Logical;
+G4Box *block62; 
+G4VisAttributes *block62vis;
+
+block62 =
+	    new G4Box("block62",40*cm,12.5*cm, 5*cm);
+
+  block62_Logical =
+	    new G4LogicalVolume(block62, Pb, "block62_Logical", 0, 0, 0);
+	block62vis = new G4VisAttributes(leadcolor);
+	block62_Logical->SetVisAttributes(block62vis);
+	
+		new G4PVPlacement(0, G4ThreeVector(-40*cm-40*cm, -15*cm-40*cm+12.5*cm,-distcollimatortotarget-
+	95*cm+5*cm+90.5*cm+27*cm+43*cm), block62_Logical, "block", world_log, 0, 0);
+//End Block 62---------------------------------------
+
+
+//Chamber on the left side
+// Right Wall leading into the chamber. It is 40cm high, 10cm thick 
+//and as long as the collimator (95cm)
+//Beginning Block 71-------------------------------------
+G4LogicalVolume *block71_Logical;
+G4Box *block71; 
+G4VisAttributes *block71vis;
+
+block71 =
+	    new G4Box("block71",10*cm,40*cm, 47.5*cm);
+
+  block71_Logical =
+	    new G4LogicalVolume(block71, Pb, "block71_Logical", 0, 0, 0);
+	block71vis = new G4VisAttributes(leadcolor);
+	block71_Logical->SetVisAttributes(block71vis);
+	
+		new G4PVPlacement(0, G4ThreeVector(45.*cm, -15.*cm,-distcollimatortotarget-
+	95*cm+47.5*cm), block71_Logical, "block", world_log, 0, 0);
+//End Block 71---------------------------------------
+
+//Left Wall closing the chamber off. It starts 37cm behind the right wall and runs
+// at a constant thickness of 10cm towards the end of the chamber.
+
+//Beginning Block 72-------------------------------------
+G4LogicalVolume *block72_Logical;
+G4Box *block72; 
+G4VisAttributes *block72vis;
+
+block72 =
+	    new G4Box("block72",10*cm,40*cm, 72*cm);
+
+  block72_Logical =
+	    new G4LogicalVolume(block72, Pb, "block72_Logical", 0, 0, 0);
+	block72vis = new G4VisAttributes(leadcolor);
+	block72_Logical->SetVisAttributes(block72vis);
+	
+		new G4PVPlacement(0, G4ThreeVector(165.*cm, -15.*cm,-distcollimatortotarget-
+	95*cm+37*cm+72*cm), block72_Logical, "block", world_log, 0, 0);
+//End Block 72---------------------------------------
+
+// A Block auf Lead sitting in front of the entrance of the chamber.
+// It is a meter Wide, 30cm deep and 5cm high
+//Beginning Block 73-------------------------------------
+G4LogicalVolume *block73_Logical;
+G4Box *block73; 
+G4VisAttributes *block73vis;
+
+block73 =
+	    new G4Box("block73",50*cm,2.5*cm, 15*cm);
+
+  block73_Logical =
+	    new G4LogicalVolume(block73, Pb, "block73_Logical", 0, 0, 0);
+	block73vis = new G4VisAttributes(leadcolor);
+	block73_Logical->SetVisAttributes(block73vis);
+	
+		new G4PVPlacement(0, G4ThreeVector(55.*cm+50*cm, -55.*cm+2.5*cm,-distcollimatortotarget-
+	95*cm+37*cm+15*cm), block73_Logical, "block", world_log, 0, 0);
+//End Block 73---------------------------------------
+
+// Lead behind the cones.It is is 19cm deep and has a 90 degree angle with the wall behind it.
+
+
+//Beginning Block 74-------------------------------------
+G4LogicalVolume *block74_Logical;
+G4Box *block74; 
+G4VisAttributes *block74vis;
+
+block74 =
+	    new G4Box("block74",30*cm,40*cm, 9.5*cm); //30cm Dicke nur geschätzt...Ideen?
+
+  block74_Logical =
+	    new G4LogicalVolume(block74, Pb, "block74_Logical", 0, 0, 0);
+	block74vis = new G4VisAttributes(leadcolor);
+	block74_Logical->SetVisAttributes(block74vis);
+	
+		new G4PVPlacement(0, G4ThreeVector(155*cm-130*cm,-15*cm, 181*cm-distcollimatortotarget-
+	95*cm-9.5*cm), block74_Logical, "block", world_log, 0, 0);
+//End Block 73---------------------------------------
+
+
+//Wall behind target
+//Beginning Block 81-------------------------------------
+G4LogicalVolume *block81_Logical;
+G4Box *block81; 
+G4VisAttributes *block81vis;
+
+block81 =
+	    new G4Box("block81",160*cm,100*cm,15*cm);
+
+  block81_Logical =
+	    new G4LogicalVolume(block81, Pb, "block81_Logical", 0, 0, 0);
+	block81vis = new G4VisAttributes(grey);
+	block81_Logical->SetVisAttributes(block81vis);
+	
+		new G4PVPlacement(0, G4ThreeVector(0, 0,181*cm-distcollimatortotarget-
+	95*cm+15*cm ), block81_Logical, "block", world_log, 0, 0);
+//End Block 81---------------------------------------
+
+
+
+//Beginning tube1-------------------------------------
+//G4LogicalVolume *tube1_Logical;
+//G4Box *tube1; 
+//G4VisAttributes *tube1vis;
+
+//tube1 =
+	    //new G4Box("tube1",10*cm,10*cm,10*cm);
+
+  //tube1_Logical =
+	    //new G4LogicalVolume(tube1, Pb, "tube1_Logical", 0, 0, 0);
+	//tube1vis = new G4VisAttributes(light_orange);
+	//tube1_Logical->SetVisAttributes(tube1vis);
+	
+		//new G4PVPlacement(0, G4ThreeVector(2*m, 2*m,2*m), tube1_Logical, "block", world_log, 0, 0);
+//End Block tube1---------------------------------------
+
+ G4double detectordistance = 265.*mm;
+ 
+   Germanium1_TUD* germaniumDetector1=new Germanium1_TUD("Germanium1_TUD");
+
+  G4double g1_Distance = -(detectordistance + germaniumDetector1->Get_Length());
+  
+  G4double g1_theta=90.*deg;
+  G4double g1_phi=175.*deg;
+  G4double g1_Angle=g1_phi-90.*deg;
+
+  G4RotationMatrix* rm1=new G4RotationMatrix();
+  rm1->rotateY(g1_Angle);
+
+  G4ThreeVector germaniumDetector1_Position=G4ThreeVector(g1_Distance*sin(g1_theta)*cos(g1_phi), g1_Distance*cos(g1_theta), g1_Distance*sin(g1_theta)*sin(g1_phi));
+
+  G4LogicalVolume* germaniumDetector1_Logical=germaniumDetector1->Get_Logical();
+
+ // crystal1_Logical = germaniumDetector1->Get_Logical();
+
+  new G4PVPlacement(rm1, germaniumDetector1_Position, germaniumDetector1_Logical, "Germanium1_TUD", world_log, false, 0);
+G4double collimator_Radius=2.5*cm;
+
+  //G4double cu_Thickness=1.*cm;
+  //G4double pb_Thickness=0.85*3.*cm;
+
+  //G4double g1_Filter_Distance;
+  
+  //g1_Filter_Distance=-(detectordistance - BGO::bgo_Collimator_Length - cu_Thickness/2);
+  //G4ThreeVector germaniumDetector1_Filter_Position=G4ThreeVector(g1_Filter_Distance*sin(g1_theta)*cos(g1_phi), g1_Filter_Distance*cos(g1_theta), g1_Filter_Distance*sin(g1_theta)*sin(g1_phi));
+  
+  //G4Tubs* filter1_Cu_Solid=new G4Tubs("Filter_Copper_Solid", 0.*cm, collimator_Radius, cu_Thickness/2, 0.*deg, 360.*deg);
+
+  //G4LogicalVolume* filter1_Cu_Logical=new G4LogicalVolume(filter1_Cu_Solid, Cu,"filter1_Cu_Logical", 0, 0, 0);
+
+  //filter1_Cu_Logical->SetVisAttributes(orange);
+  
+  //new G4PVPlacement(rm1,germaniumDetector1_Filter_Position, filter1_Cu_Logical, "Filter1_Copper", world_log , false,0);
+  
+  //g1_Filter_Distance=-(detectordistance - BGO::bgo_Collimator_Length - cu_Thickness - pb_Thickness/2);
+  //germaniumDetector1_Filter_Position=G4ThreeVector(g1_Filter_Distance*sin(g1_theta)*cos(g1_phi), g1_Filter_Distance*cos(g1_theta), g1_Filter_Distance*sin(g1_theta)*sin(g1_phi));
+
+  //G4Tubs* filter1_Pb_Solid=new G4Tubs("filter1_Pb_Solid", 0.*cm, collimator_Radius, pb_Thickness/2, 0.*deg, 360.*deg);
+
+  //G4LogicalVolume* filter1_Pb_Logical=new G4LogicalVolume(filter1_Pb_Solid, Pb,"filter1_Pb_Logical", 0, 0, 0);
+  
+  //filter1_Pb_Logical->SetVisAttributes(grey);
+
+  //new G4PVPlacement(rm1, germaniumDetector1_Filter_Position, filter1_Pb_Logical, "Filter1_Lead", world_log , false, 0);
+
+
+
+
+
+
+
+
+
+// /control/execute init_vis.mac
 
 	return world_phys;
 }
