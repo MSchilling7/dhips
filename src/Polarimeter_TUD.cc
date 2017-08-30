@@ -57,7 +57,7 @@ Polarimeter_TUD::Polarimeter_TUD(G4String Detector_Name) {
 	Polarimeter_TUD_Logical =
 	    new G4LogicalVolume(case_Solid, Al, "AluCasePol_Logical", 0, 0, 0);
 
-	Polarimeter_TUD_Logical->SetVisAttributes(grey);
+	Polarimeter_TUD_Logical->SetVisAttributes(white);
 
 	/************************Vacuumlayer*****************************/
 

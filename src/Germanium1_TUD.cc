@@ -59,7 +59,7 @@ Germanium1_TUD::Germanium1_TUD(G4String Detector_Name) {
 	    new G4LogicalVolume(case_Solid, Al, "AluCase1_Logical", 0, 0, 0);
 
 	// G4VisAttributes* germanium1VisAtt=new G4VisAttributes(grey);
-	germanium1_Logical->SetVisAttributes(grey);
+	germanium1_Logical->SetVisAttributes(white);
 
 	/************************Vacuumlayer*****************************/
 
