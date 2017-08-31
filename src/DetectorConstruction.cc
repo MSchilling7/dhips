@@ -553,7 +553,7 @@ block81 =
   
   BGO* bgo1 = new BGO();
   
-  G4double bgo1_Distance = -(detectordistance1 + BGO::bgo_Length/2);
+  G4double bgo1_Distance = -(detectordistance1 + bgo1->Get_Length()*0.5);
   G4ThreeVector bgo1_Position = G4ThreeVector(bgo1_Distance*sin(g1_theta)*cos(g1_phi), bgo1_Distance*cos(g1_theta), bgo1_Distance*sin(g1_theta)*sin(g1_phi));
   
   G4LogicalVolume* bgo1_Logical = bgo1->Get_Logical();
@@ -628,7 +628,7 @@ block81 =
   
   BGO* bgo2 = new BGO();
   
-  G4double bgo2_Distance = -(detectordistance2 + BGO::bgo_Length/2);
+  G4double bgo2_Distance = -(detectordistance2 + bgo2->Get_Length()*0.5);
   G4ThreeVector bgo2_Position = G4ThreeVector(bgo2_Distance*sin(g2_theta)*cos(g2_phi), bgo2_Distance*cos(g2_theta), bgo2_Distance*sin(g2_theta)*sin(g2_phi));
   
   G4LogicalVolume* bgo2_Logical = bgo2->Get_Logical();
@@ -695,7 +695,7 @@ block81 =
   
   BGO* bgop = new BGO();
   
-  G4double bgop_Distance = -(poldistance + BGO::bgo_Length/2);
+  G4double bgop_Distance = -(poldistance + bgop->Get_Length()/2);
   G4ThreeVector bgop_Position = G4ThreeVector(bgop_Distance*sin(pol_theta)*cos(pol_phi), bgop_Distance*cos(pol_theta), bgop_Distance*sin(pol_theta)*sin(pol_phi));
   
   G4LogicalVolume* bgop_Logical = bgop->Get_Logical();
