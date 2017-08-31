@@ -95,9 +95,16 @@ G4double trans_z = -400. * mm;
 
 // These boxes are declared here for later use. They are used to make tubs out of them.
 	G4Box *blockwithouthole = new G4Box("blockwithouthole", block_x / 2, block_y / 2, block_z / 2);
-	//G4Box *tubeblock1 = new G4Box("tubeblock1",15.5*cm,15.5*cm,1*cm);
-    //G4Box *tubeblock2 = new G4Box("tubeblock2",15.5*cm,15.5*cm,8.5*cm);
-    //G4Box *tubeblock3 = new G4Box("tubeblock3",15.5*cm,15.5*cm,5.25*cm);
+	 
+	 G4double disttoendblock32= -40*cm+trans_x ;
+	 
+	 //detectordistance1 should be divided by cosine. For 5 deg the difference is less than 1 in 100000
+	 G4double detectordistance1 = abs(disttoendblock32)-(192)*mm;//this is the length of bgo
+	 G4double detectordistance2 = 265.*mm;
+	 G4double poldistance = 265.*mm;
+	 
+
+	
 // Variable for collimator hole radius
 G4double colholeradius_min=6. * mm;
 G4double colholeradius_max=10. * mm;
@@ -170,7 +177,7 @@ G4VisAttributes *Spherevis;
 Sphere =
 new G4Sphere("Sphere",
               0.*cm,
-             19.7*cm,
+             40*cm,
               0*deg,
              360*deg,
              0*deg,
@@ -292,18 +299,32 @@ block31 =
 G4LogicalVolume *block32_Logical;
 G4Box *block32; 
 G4VisAttributes *block32vis;
+G4ThreeVector translationblock32(0,0,0);
+G4RotationMatrix yRot45degblock32;
+yRot45degblock32.rotateY(M_PI*95/180.*rad);
+
+G4Tubs *subcase_Solid1;
+G4SubtractionSolid *block32minusDetector1;	
+	subcase_Solid1= new G4Tubs("subcase_Solid1", 0, 92*mm,
+	                                116*mm/2, 0. * deg, 360. * deg);
+//The distance from the target to other side of block32 is used here and 
+// in the defintion of the detector1 
 
 block32 =
 	    new G4Box("block32",25*mm,40*cm, 40.5*cm);
+block32minusDetector1=
+new G4SubtractionSolid("block32-subcase_Solid1",block32,subcase_Solid1,
+&yRot45degblock32,translationblock32);
 
   block32_Logical =
-	    new G4LogicalVolume(block32, Pb, "block32_Logical", 0, 0, 0);
+	    new G4LogicalVolume(block32minusDetector1, Pb, "block32_Logical", 0, 0, 0);
 	block32vis = new G4VisAttributes(leadcolor);
 	block32_Logical->SetVisAttributes(block32vis);
 	
-		new G4PVPlacement(0, G4ThreeVector(-37.5*cm+trans_x , -15*cm+trans_y,-distcollimatortotarget-
+		new G4PVPlacement(0, G4ThreeVector(disttoendblock32+2.5*cm , -15*cm+trans_y,-distcollimatortotarget-
 	95*cm+50*cm+90.5*cm+trans_z), block32_Logical, "block", world_log, 0, 0);
 //End Block 32---------------------------------------
+
 
 //Above the iron shielding sits a layer of lead that is 30cm thick
 //Beginning Block 41-------------------------------------
@@ -502,11 +523,11 @@ block81 =
 
 
 //First Detector. Sole one on the right side. Angle is 95 degrees relativ to the beam.
- G4double detectordistance = 265.*mm;
+
  
    Germanium1_TUD* germaniumDetector1=new Germanium1_TUD("Germanium1_TUD");
 
-  G4double g1_Distance = -(detectordistance + germaniumDetector1->Get_Length());
+  G4double g1_Distance = -(detectordistance1 + germaniumDetector1->Get_Length());
   
   G4double g1_theta=90.*deg;
   G4double g1_phi=5.*deg;
@@ -532,7 +553,7 @@ block81 =
   
   BGO* bgo1 = new BGO();
   
-  G4double bgo1_Distance = -(detectordistance + BGO::bgo_Length/2);
+  G4double bgo1_Distance = -(detectordistance1 + BGO::bgo_Length/2);
   G4ThreeVector bgo1_Position = G4ThreeVector(bgo1_Distance*sin(g1_theta)*cos(g1_phi), bgo1_Distance*cos(g1_theta), bgo1_Distance*sin(g1_theta)*sin(g1_phi));
   
   G4LogicalVolume* bgo1_Logical = bgo1->Get_Logical();
@@ -543,34 +564,34 @@ block81 =
 
 // Filter of Germanium1
 
-  G4double collimator_Radius=2.5*cm;
+  //G4double collimator_Radius=2.5*cm;
 
-  G4double cu_Thickness=1.*cm;
-  G4double pb_Thickness=0.85*3.*cm;
+  //G4double cu_Thickness=1.*cm;
+  //G4double pb_Thickness=0.85*3.*cm;
 
-  G4double g1_Filter_Distance;
+  //G4double g1_Filter_Distance;
   
-  g1_Filter_Distance=-(detectordistance - BGO::bgo_Collimator_Length - cu_Thickness/2);
-  G4ThreeVector germaniumDetector1_Filter_Position=G4ThreeVector(g1_Filter_Distance*sin(g1_theta)*cos(g1_phi), g1_Filter_Distance*cos(g1_theta), g1_Filter_Distance*sin(g1_theta)*sin(g1_phi));
+  //g1_Filter_Distance=-(detectordistance1 - BGO::bgo_Collimator_Length - cu_Thickness/2);
+  //G4ThreeVector germaniumDetector1_Filter_Position=G4ThreeVector(g1_Filter_Distance*sin(g1_theta)*cos(g1_phi), g1_Filter_Distance*cos(g1_theta), g1_Filter_Distance*sin(g1_theta)*sin(g1_phi));
   
-  G4Tubs* filter1_Cu_Solid=new G4Tubs("Filter_Copper_Solid", 0.*cm, collimator_Radius, cu_Thickness/2, 0.*deg, 360.*deg);
+  //G4Tubs* filter1_Cu_Solid=new G4Tubs("Filter_Copper_Solid", 0.*cm, collimator_Radius, cu_Thickness/2, 0.*deg, 360.*deg);
 
-  G4LogicalVolume* filter1_Cu_Logical=new G4LogicalVolume(filter1_Cu_Solid, Cu,"filter1_Cu_Logical", 0, 0, 0);
+  //G4LogicalVolume* filter1_Cu_Logical=new G4LogicalVolume(filter1_Cu_Solid, Cu,"filter1_Cu_Logical", 0, 0, 0);
 
-  filter1_Cu_Logical->SetVisAttributes(orange);
+  //filter1_Cu_Logical->SetVisAttributes(orange);
   
-  new G4PVPlacement(rm1,germaniumDetector1_Filter_Position, filter1_Cu_Logical, "Filter1_Copper", world_log , false,0);
+  //new G4PVPlacement(rm1,germaniumDetector1_Filter_Position, filter1_Cu_Logical, "Filter1_Copper", world_log , false,0);
   
-  g1_Filter_Distance=-(detectordistance - BGO::bgo_Collimator_Length - cu_Thickness - pb_Thickness/2);
-  germaniumDetector1_Filter_Position=G4ThreeVector(g1_Filter_Distance*sin(g1_theta)*cos(g1_phi), g1_Filter_Distance*cos(g1_theta), g1_Filter_Distance*sin(g1_theta)*sin(g1_phi));
+  //g1_Filter_Distance=-(detectordistance1 - BGO::bgo_Collimator_Length - cu_Thickness - pb_Thickness/2);
+  //germaniumDetector1_Filter_Position=G4ThreeVector(g1_Filter_Distance*sin(g1_theta)*cos(g1_phi), g1_Filter_Distance*cos(g1_theta), g1_Filter_Distance*sin(g1_theta)*sin(g1_phi));
 
-  G4Tubs* filter1_Pb_Solid=new G4Tubs("filter1_Pb_Solid", 0.*cm, collimator_Radius, pb_Thickness/2, 0.*deg, 360.*deg);
+  //G4Tubs* filter1_Pb_Solid=new G4Tubs("filter1_Pb_Solid", 0.*cm, collimator_Radius, pb_Thickness/2, 0.*deg, 360.*deg);
 
-  G4LogicalVolume* filter1_Pb_Logical=new G4LogicalVolume(filter1_Pb_Solid, Pb,"filter1_Pb_Logical", 0, 0, 0);
+  //G4LogicalVolume* filter1_Pb_Logical=new G4LogicalVolume(filter1_Pb_Solid, Pb,"filter1_Pb_Logical", 0, 0, 0);
   
-  filter1_Pb_Logical->SetVisAttributes(grey);
+  //filter1_Pb_Logical->SetVisAttributes(grey);
 
-  new G4PVPlacement(rm1, germaniumDetector1_Filter_Position, filter1_Pb_Logical, "Filter1_Lead", world_log , false, 0);
+  //new G4PVPlacement(rm1, germaniumDetector1_Filter_Position, filter1_Pb_Logical, "Filter1_Lead", world_log , false, 0);
 
 
 
@@ -586,7 +607,7 @@ block81 =
 //
  Germanium2_TUD* germaniumDetector2=new Germanium2_TUD("Germanium2_TUD");
   
-  G4double g2_Distance = -(detectordistance + germaniumDetector2->Get_Length());
+  G4double g2_Distance = -(detectordistance2 + germaniumDetector2->Get_Length());
 
   G4double g2_theta=90.*deg;
   G4double g2_phi= 140.*deg;
@@ -607,7 +628,7 @@ block81 =
   
   BGO* bgo2 = new BGO();
   
-  G4double bgo2_Distance = -(detectordistance + BGO::bgo_Length/2);
+  G4double bgo2_Distance = -(detectordistance2 + BGO::bgo_Length/2);
   G4ThreeVector bgo2_Position = G4ThreeVector(bgo2_Distance*sin(g2_theta)*cos(g2_phi), bgo2_Distance*cos(g2_theta), bgo2_Distance*sin(g2_theta)*sin(g2_phi));
   
   G4LogicalVolume* bgo2_Logical = bgo2->Get_Logical();
@@ -618,33 +639,33 @@ block81 =
 
  // Filter of Germanium2
 
-  cu_Thickness=1.*cm;
-  pb_Thickness=1.73*cm;
+  //cu_Thickness=1.*cm;
+  //pb_Thickness=1.73*cm;
 
-  G4double g2_Filter_Distance =-(detectordistance - BGO::bgo_Collimator_Length - cu_Thickness/2);
+  //G4double g2_Filter_Distance =-(detectordistance2 - BGO::bgo_Collimator_Length - cu_Thickness/2);
 
-  G4ThreeVector germaniumDetector2_Filter_Position=G4ThreeVector(g2_Filter_Distance*sin(g2_theta)*cos(g2_phi), g2_Filter_Distance*cos(g2_theta), g2_Filter_Distance*sin(g2_theta)*sin(g2_phi));
-  G4Tubs* filter2_Copper_Solid=new G4Tubs("filter2_Copper_Solid", 0.*cm, collimator_Radius, cu_Thickness/2, 0.*deg, 360.*deg);
+  //G4ThreeVector germaniumDetector2_Filter_Position=G4ThreeVector(g2_Filter_Distance*sin(g2_theta)*cos(g2_phi), g2_Filter_Distance*cos(g2_theta), g2_Filter_Distance*sin(g2_theta)*sin(g2_phi));
+  //G4Tubs* filter2_Copper_Solid=new G4Tubs("filter2_Copper_Solid", 0.*cm, collimator_Radius, cu_Thickness/2, 0.*deg, 360.*deg);
 
-  G4LogicalVolume* filter2_Copper_Logical=new G4LogicalVolume(filter2_Copper_Solid, Cu,"filter2_Copper_Logical", 0, 0, 0);
+  //G4LogicalVolume* filter2_Copper_Logical=new G4LogicalVolume(filter2_Copper_Solid, Cu,"filter2_Copper_Logical", 0, 0, 0);
 
-  filter2_Copper_Logical->SetVisAttributes(orange);
+  //filter2_Copper_Logical->SetVisAttributes(orange);
   
-  new G4PVPlacement(rm2,germaniumDetector2_Filter_Position, filter2_Copper_Logical, "filter2_Copper",world_log , false,0);
+  //new G4PVPlacement(rm2,germaniumDetector2_Filter_Position, filter2_Copper_Logical, "filter2_Copper",world_log , false,0);
   
-  g2_Filter_Distance=-(detectordistance - BGO::bgo_Collimator_Length - cu_Thickness - pb_Thickness/2);
+  //g2_Filter_Distance=-(detectordistance2 - BGO::bgo_Collimator_Length - cu_Thickness - pb_Thickness/2);
 
-  germaniumDetector2_Filter_Position=G4ThreeVector(g2_Filter_Distance*sin(g2_theta)*cos(g2_phi), g2_Filter_Distance*cos(g2_theta), g2_Filter_Distance*sin(g2_theta)*sin(g2_phi));
+  //germaniumDetector2_Filter_Position=G4ThreeVector(g2_Filter_Distance*sin(g2_theta)*cos(g2_phi), g2_Filter_Distance*cos(g2_theta), g2_Filter_Distance*sin(g2_theta)*sin(g2_phi));
 
-  G4Tubs* filter2_Lead_Solid=new G4Tubs("filter2_Lead_Solid", 0.*cm, collimator_Radius, pb_Thickness/2, 0.*deg, 360.*deg);
+  //G4Tubs* filter2_Lead_Solid=new G4Tubs("filter2_Lead_Solid", 0.*cm, collimator_Radius, pb_Thickness/2, 0.*deg, 360.*deg);
 
-  G4LogicalVolume* filter2_Lead_Logical=new G4LogicalVolume(filter2_Lead_Solid, Pb,"filter2_Lead_Logical", 0, 0, 0);
+  //G4LogicalVolume* filter2_Lead_Logical=new G4LogicalVolume(filter2_Lead_Solid, Pb,"filter2_Lead_Logical", 0, 0, 0);
   
-  filter2_Lead_Logical->SetVisAttributes(grey);
-  // Crystal musste wieder aus Get_Logical() gelöscht werden.
-  crystal2_Logical = germaniumDetector2->Get_Logical();
+  //filter2_Lead_Logical->SetVisAttributes(grey);
+  //// Crystal musste wieder aus Get_Logical() gelöscht werden.
+  //crystal2_Logical = germaniumDetector2->Get_Logical();
 
-  new G4PVPlacement(rm2,germaniumDetector2_Filter_Position,filter2_Lead_Logical, "filter2_Lead", world_log , false,0);
+  //new G4PVPlacement(rm2,germaniumDetector2_Filter_Position,filter2_Lead_Logical, "filter2_Lead", world_log , false,0);
   
   
    /***************************** Polarimeter **************************/
@@ -653,7 +674,7 @@ block81 =
 // At 90 Degree angle relativ to the beam.
   Polarimeter_TUD* polarimeterDetector=new Polarimeter_TUD("Polarimeter_TUD");
 
-  G4double pol_Distance = -(detectordistance + polarimeterDetector->Get_Length());
+  G4double pol_Distance = -(poldistance + polarimeterDetector->Get_Length());
   
   G4double pol_theta=90.*deg;
   G4double pol_phi=180.*deg;
@@ -674,7 +695,7 @@ block81 =
   
   BGO* bgop = new BGO();
   
-  G4double bgop_Distance = -(detectordistance + BGO::bgo_Length/2);
+  G4double bgop_Distance = -(poldistance + BGO::bgo_Length/2);
   G4ThreeVector bgop_Position = G4ThreeVector(bgop_Distance*sin(pol_theta)*cos(pol_phi), bgop_Distance*cos(pol_theta), bgop_Distance*sin(pol_theta)*sin(pol_phi));
   
   G4LogicalVolume* bgop_Logical = bgop->Get_Logical();
@@ -685,31 +706,33 @@ block81 =
 
 // Filter of Polarimeter
 
-  cu_Thickness=1.*cm;
-  pb_Thickness=2.60*cm;
+  //cu_Thickness=1.*cm;
+  //pb_Thickness=2.60*cm;
 
-  G4double pol_Filter_Distance = -(detectordistance - BGO::bgo_Collimator_Length - cu_Thickness/2);   
+  //G4double pol_Filter_Distance = -(poldistance - BGO::bgo_Collimator_Length - cu_Thickness/2);   
 
-  G4ThreeVector pol_Filter_Position=G4ThreeVector(pol_Filter_Distance*sin(pol_theta)*cos(pol_phi), pol_Filter_Distance*cos(pol_theta), pol_Filter_Distance*sin(pol_theta)*sin(pol_phi));
-  G4Tubs* pol_Filter_Cu_Solid=new G4Tubs("pol_Filter_Cu_Solid", 0.*cm, collimator_Radius, cu_Thickness/2, 0.*deg, 360.*deg);
+  //G4ThreeVector pol_Filter_Position=G4ThreeVector(pol_Filter_Distance*sin(pol_theta)*cos(pol_phi), pol_Filter_Distance*cos(pol_theta), pol_Filter_Distance*sin(pol_theta)*sin(pol_phi));
+  //G4Tubs* pol_Filter_Cu_Solid=new G4Tubs("pol_Filter_Cu_Solid", 0.*cm, collimator_Radius, cu_Thickness/2, 0.*deg, 360.*deg);
 
-  G4LogicalVolume* pol_Filter_Cu_Logical=new G4LogicalVolume(pol_Filter_Cu_Solid, Cu,"pol_Filter_Cu_Logical", 0, 0, 0);
+  //G4LogicalVolume* pol_Filter_Cu_Logical=new G4LogicalVolume(pol_Filter_Cu_Solid, Cu,"pol_Filter_Cu_Logical", 0, 0, 0);
 
-  pol_Filter_Cu_Logical->SetVisAttributes(orange);
+  //pol_Filter_Cu_Logical->SetVisAttributes(orange);
   
-  new G4PVPlacement(rmPol, pol_Filter_Position, pol_Filter_Cu_Logical, "FilterPol_Copper", world_log , false, 0);
+  //new G4PVPlacement(rmPol, pol_Filter_Position, pol_Filter_Cu_Logical, "FilterPol_Copper", world_log , false, 0);
   
-  pol_Filter_Distance = -(detectordistance - BGO::bgo_Collimator_Length - cu_Thickness - pb_Thickness/2);    
+  //pol_Filter_Distance = -(poldistance - BGO::bgo_Collimator_Length - cu_Thickness - pb_Thickness/2);    
 
-  pol_Filter_Position=G4ThreeVector(pol_Filter_Distance*sin(pol_theta)*cos(pol_phi), pol_Filter_Distance*cos(pol_theta), pol_Filter_Distance*sin(pol_theta)*sin(pol_phi));
+  //pol_Filter_Position=G4ThreeVector(pol_Filter_Distance*sin(pol_theta)*cos(pol_phi), pol_Filter_Distance*cos(pol_theta), pol_Filter_Distance*sin(pol_theta)*sin(pol_phi));
 
-  G4Tubs* pol_Filter_Pb_Solid=new G4Tubs("pol_Filter_Pb_Solid", 0.*cm, collimator_Radius, pb_Thickness/2, 0.*deg, 360.*deg);
+  //G4Tubs* pol_Filter_Pb_Solid=new G4Tubs("pol_Filter_Pb_Solid", 0.*cm, collimator_Radius, pb_Thickness/2, 0.*deg, 360.*deg);
 
-  G4LogicalVolume* pol_Filter_Pb_Logical=new G4LogicalVolume(pol_Filter_Pb_Solid, Pb,"pol_Filter_Pb_Logical", 0, 0, 0);
+  //G4LogicalVolume* pol_Filter_Pb_Logical=new G4LogicalVolume(pol_Filter_Pb_Solid, Pb,"pol_Filter_Pb_Logical", 0, 0, 0);
 
-  pol_Filter_Pb_Logical->SetVisAttributes(grey);
+  //pol_Filter_Pb_Logical->SetVisAttributes(grey);
   
-  new G4PVPlacement(rmPol,pol_Filter_Position,pol_Filter_Pb_Logical, "FilterPol_Lead", world_log, false, 0);
+  //new G4PVPlacement(rmPol,pol_Filter_Position,pol_Filter_Pb_Logical, "FilterPol_Lead", world_log, false, 0);
+
+
 
 
 // /control/execute init_vis.mac
