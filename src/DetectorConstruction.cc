@@ -558,7 +558,7 @@ block81 =
   
   G4LogicalVolume* bgo1_Logical = bgo1->Get_Logical();
   
-  G4LogicalVolume* bgoCrystal1_Logical = bgo1->Get_Crystal_Logical();
+  //G4LogicalVolume* bgoCrystal1_Logical = bgo1->Get_Crystal_Logical();
   
   new G4PVPlacement(rm1, bgo1_Position, bgo1_Logical, "bgo1", world_log, false, 0);
 
@@ -633,7 +633,7 @@ block81 =
   
   G4LogicalVolume* bgo2_Logical = bgo2->Get_Logical();
   
-  G4LogicalVolume* bgoCrystal2_Logical = bgo2->Get_Crystal_Logical();
+  //G4LogicalVolume* bgoCrystal2_Logical = bgo2->Get_Crystal_Logical();
   
   new G4PVPlacement(rm2, bgo2_Position, bgo2_Logical, "bgo2", world_log, false, 0);
 
@@ -700,7 +700,7 @@ block81 =
   
   G4LogicalVolume* bgop_Logical = bgop->Get_Logical();
   //Auch hier wurde G4LogicalVolume* hinzugefügt
-  G4LogicalVolume* bgoCrystalp_Logical = bgop->Get_Crystal_Logical();
+  //G4LogicalVolume* bgoCrystalp_Logical = bgop->Get_Crystal_Logical();
   
   new G4PVPlacement(rmPol, bgop_Position, bgop_Logical, "bgop", world_log, false, 0);
 

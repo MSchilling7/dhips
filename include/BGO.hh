@@ -10,18 +10,22 @@ public:
   ~BGO();
 
   G4LogicalVolume* Get_Logical() { return bgo_Mother_Logical; }
-  G4LogicalVolume* Get_Crystal_Logical() { return bgo_Crystal_Logical; }
+  //G4LogicalVolume* Get_Crystal_Logical() { return bgo_Crystal_Logical; }
 
+  // Length and radius of the BGO mother volume which just encloses all of the parts of the BGO
   G4double Get_Length(){ return bgo_Mother_Length; };
   G4double Get_Radius(){ return bgo_Mother_Radius; };
+  // max_penetration depth denotes how far (measured from the backward end of the BGO) a detector can be pushed inside the BGO
+  G4double Get_Max_Penetration_Depth(){ return max_penetration_depth; };
 
 
 private:
   G4LogicalVolume* bgo_Mother_Logical;
-  G4LogicalVolume* bgo_Crystal_Logical;
+  //G4LogicalVolume* bgo_Crystal_Logical;
 
   G4double bgo_Mother_Length;
   G4double bgo_Mother_Radius;
+  G4double max_penetration_depth;
 };
 
 #endif
