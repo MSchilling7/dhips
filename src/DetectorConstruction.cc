@@ -188,8 +188,8 @@ new G4Sphere("Sphere",
 	Spherevis = new G4VisAttributes(red);
 	Sphere_Logical->SetVisAttributes(Spherevis);
 
-	new G4PVPlacement(0, G4ThreeVector(0, 0,0 ), Sphere_Logical, 
-	"Sphere", world_log, 0, 0);
+	//new G4PVPlacement(0, G4ThreeVector(0, 0,0 ), Sphere_Logical, 
+	//"Sphere", world_log, 0, 0);
 
 /************************* Iron Shielding *****************/
 // Iron Shielding around the Copper Collimator
@@ -544,7 +544,7 @@ block81 =
 //Get_Logical ersetzt werden.
  G4LogicalVolume* crystal1_Logical = germaniumDetector1->Get_Logical();
 
-  new G4PVPlacement(rm1, germaniumDetector1_Position, germaniumDetector1_Logical, "Germanium1_TUD", world_log, false, 0);
+  //new G4PVPlacement(rm1, germaniumDetector1_Position, germaniumDetector1_Logical, "Germanium1_TUD", world_log, false, 0);
 
 
 
