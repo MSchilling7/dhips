@@ -158,13 +158,25 @@ BGO::BGO(){
   
   G4LogicalVolume* al_Logical = new G4LogicalVolume(al_2, Al, "al_Logical", 0, 0, 0);
   
-  al_Logical->SetVisAttributes(grey);
+  al_Logical->SetVisAttributes(magenta);
+  
   
   bgo_Mother_Logical = al_Logical;
   bgo_Length = al_Cone1_Length + al_Cone2_Length + al_Cylinder_Length;
   
   new G4PVPlacement(0, G4ThreeVector(0., 0., -al_Cylinder_Length/2 + bgo_Cylinder_Length/2), bgo_Logical, "bgo_Crystal", bgo_Mother_Logical, false, 0);
+  //
+  // Adding front Airhole for SubtractionSolid for Detector1
+  //
+  G4double air_hole1_Length = 10*cm;
   
+  G4Tubs* air_hole1 = new G4Tubs("air_hole_solid", al_Cylinder_innerRadius, al_Cylinder_outerRadius,
+				    air_hole1_Length/2, 0., twopi);
+  
+   G4UnionSolid* al_3 = new G4UnionSolid("al_3", al_2, air_hole1,
+0, G4ThreeVector(0., 0.,air_hole1_Length/2+ al_Cylinder_Length + al_Cone1_Length + al_Cone2_Length));
+  
+  al_Solid=al_3;
 }
 
 BGO::~BGO(){

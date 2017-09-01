@@ -19,19 +19,23 @@
 #include "G4LogicalVolume.hh"
 #include "G4PVPlacement.hh"
 #include "G4SubtractionSolid.hh"
+#include "G4TwoVector.hh"
 #include "G4ThreeVector.hh"
 #include "G4Tubs.hh"
 #include "G4UnionSolid.hh"
 #include "G4VisAttributes.hh"
 #include "globals.hh"
 #include "G4Sphere.hh"
+#include "G4GenericTrap.hh"
 
 // Units
 #include "G4PhysicalConstants.hh"
 #include "G4SystemOfUnits.hh"
 
 #include <sstream>
+#include <vector>
 
+using std::vector;
 
 using std::stringstream;
 
@@ -98,8 +102,7 @@ G4double trans_z = -400. * mm;
 	 
 	 G4double disttoendblock32= -40*cm+trans_x ;
 	 
-	 //detectordistance1 should be divided by cosine. For 5 deg the difference is less than 1 in 100000
-	 G4double detectordistance1 = abs(disttoendblock32)-(192)*mm;//this is the length of bgo
+	 G4double detectordistance1 = (abs(disttoendblock32)-(203-45)*mm)/cos(5*deg);
 	 G4double detectordistance2 = 265.*mm;
 	 G4double poldistance = 265.*mm;
 	 
@@ -144,22 +147,24 @@ G4Box *block25;
 G4VisAttributes *block25vis;
 
 block25 =
-	    new G4Box("block25",40*cm,40*cm, 40*cm);
+	    new G4Box("block25",5*cm,2*cm, 2*cm);
 
   block25_Logical =
 	    new G4LogicalVolume(block25, Fe, "block25_Logical", 0, 0, 0);
 	block25vis = new G4VisAttributes(red);
 	block25_Logical->SetVisAttributes(block25vis);
 
-	new G4PVPlacement(0, G4ThreeVector(0, -100*cm,-250*cm), block25_Logical, "block", world_log, 0, 0);
+		new G4PVPlacement(0, G4ThreeVector(0 ,0, 0), block25_Logical, "block", world_log, 0, 0);
 //End Block 025---------------------------------------
+
+//Block around target
 //Beginning Block 026-------------------------------------
 G4LogicalVolume *block26_Logical;
 G4Box *block26; 
 G4VisAttributes *block26vis;
 
 block26 =
-	    new G4Box("block26",10*cm,10*cm, 10*cm);
+	    new G4Box("block26",1*cm,1*cm, 1*cm);
 
   block26_Logical =
 	    new G4LogicalVolume(block26, Fe, "block26_Logical", 0, 0, 0);
@@ -170,26 +175,26 @@ block26 =
 //End Block 026---------------------------------------
 
 //Orientation Sphere
-G4LogicalVolume *Sphere_Logical;
-G4Sphere *Sphere; 
-G4VisAttributes *Spherevis;
+//G4LogicalVolume *Sphere_Logical;
+//G4Sphere *Sphere; 
+//G4VisAttributes *Spherevis;
 
-Sphere =
-new G4Sphere("Sphere",
-              0.*cm,
-             40*cm,
-              0*deg,
-             360*deg,
-             0*deg,
-       180*deg ) ;
+//Sphere =
+//new G4Sphere("Sphere",
+              //0.*cm,
+             //40*cm,
+              //0*deg,
+             //360*deg,
+             //0*deg,
+       //180*deg ) ;
              
-             Sphere_Logical =
-	    new G4LogicalVolume(Sphere, Fe, "Sphere_Logical", 0, 0, 0);
-	Spherevis = new G4VisAttributes(red);
-	Sphere_Logical->SetVisAttributes(Spherevis);
+             //Sphere_Logical =
+	    //new G4LogicalVolume(Sphere, Fe, "Sphere_Logical", 0, 0, 0);
+	//Spherevis = new G4VisAttributes(red);
+	//Sphere_Logical->SetVisAttributes(Spherevis);
 
-	new G4PVPlacement(0, G4ThreeVector(0, 0,0 ), Sphere_Logical, 
-	"Sphere", world_log, 0, 0);
+	//new G4PVPlacement(0, G4ThreeVector(0, 0,0 ), Sphere_Logical, 
+	//"Sphere", world_log, 0, 0);
 
 /************************* Iron Shielding *****************/
 // Iron Shielding around the Copper Collimator
@@ -294,36 +299,73 @@ block31 =
 	95*cm+50*cm+trans_z), block31_Logical, "block", world_log, 0, 0);
 //End Block 31---------------------------------------
 
+
+BGO* bgo1 = new BGO(); //From here on we need the BGO for the SubtractionSolid
+ 
 //Second part of the wall is only 5cm thick and continues for 81cm until the back wall.
+
 //Beginning Block 32-------------------------------------
 G4LogicalVolume *block32_Logical;
 G4Box *block32; 
 G4VisAttributes *block32vis;
-G4ThreeVector translationblock32(0,0,0);
-G4RotationMatrix yRot45degblock32;
-yRot45degblock32.rotateY(M_PI*95/180.*rad);
+G4UnionSolid *subcase_Solid11;
+G4Tubs *subcase_Solid12;
 
-G4Tubs *subcase_Solid1;
+G4RotationMatrix yRot45degblock32;
+yRot45degblock32.rotateY(M_PI*275/180.*rad);
+G4ThreeVector translationblock32(0,0,0);
+
 G4SubtractionSolid *block32minusDetector1;	
-	subcase_Solid1= new G4Tubs("subcase_Solid1", 0, 92*mm,
-	                                116*mm/2, 0. * deg, 360. * deg);
+G4SubtractionSolid *block32minusDetector1andhole;	
 //The distance from the target to other side of block32 is used here and 
 // in the defintion of the detector1 
 
+
+
+  G4UnionSolid* Al_Solid1 = bgo1->Get_Al_Solid();
+subcase_Solid11= Al_Solid1;
 block32 =
-	    new G4Box("block32",25*mm,40*cm, 40.5*cm);
+	    new G4Box("block32",175*mm,40*cm, 40.5*cm);
 block32minusDetector1=
-new G4SubtractionSolid("block32-subcase_Solid1",block32,subcase_Solid1,
+new G4SubtractionSolid("block32-subcase_Solid11",block32,subcase_Solid11,
 &yRot45degblock32,translationblock32);
 
+subcase_Solid12= new G4Tubs("subcase_Solid12",
+ 0, 50*mm, 115*mm/2, 0. * deg, 360. * deg);
+
+
+block32minusDetector1andhole=
+new G4SubtractionSolid("block32minusDetector1-subcase_Solid12",block32minusDetector1,subcase_Solid12,
+&yRot45degblock32,translationblock32);
+
+
+
   block32_Logical =
-	    new G4LogicalVolume(block32minusDetector1, Pb, "block32_Logical", 0, 0, 0);
+	    new G4LogicalVolume(block32minusDetector1andhole, Pb, "block32_Logical", 0, 0, 0);
 	block32vis = new G4VisAttributes(leadcolor);
 	block32_Logical->SetVisAttributes(block32vis);
 	
-		new G4PVPlacement(0, G4ThreeVector(disttoendblock32+2.5*cm , -15*cm+trans_y,-distcollimatortotarget-
+		new G4PVPlacement(0, G4ThreeVector(disttoendblock32+17.5*cm , -15*cm+trans_y,-distcollimatortotarget-
 	95*cm+50*cm+90.5*cm+trans_z), block32_Logical, "block", world_log, 0, 0);
 //End Block 32---------------------------------------
+
+//Small intermediate Block to fill a Gap between block32 and block31
+//Beginning Block 33-------------------------------------
+G4LogicalVolume *block33_Logical;
+G4Box *block33; 
+G4VisAttributes *block33vis;
+
+block33 =
+	    new G4Box("block33",15*cm,40*cm, 2.5*cm);
+
+  block33_Logical =
+	    new G4LogicalVolume(block33, Pb, "block33_Logical", 0, 0, 0);
+	block33vis = new G4VisAttributes(leadcolor);
+	block33_Logical->SetVisAttributes(block33vis);
+	
+		new G4PVPlacement(0, G4ThreeVector(-20*cm+trans_x , -15*cm+trans_y,
+		2.5*cm-distcollimatortotarget+trans_z), block33_Logical, "block", world_log, 0, 0);
+//End Block 33---------------------------------------
 
 
 //Above the iron shielding sits a layer of lead that is 30cm thick
@@ -482,22 +524,142 @@ block74 =
 
 
 
-// Block in front of the Detector and Polarimeter
+// Block in front of and enclosing the Detector and Polarimeter
 //Beginning Block 75-------------------------------------
 G4LogicalVolume *block75_Logical;
-G4Box *block75; 
+G4Box *block751; 
+G4Box *block752; 
+G4UnionSolid *block75;
+// DREIECK! G4Box *block753; 
 G4VisAttributes *block75vis;
 
-block75 =
-	    new G4Box("block75",5*cm,40*cm, 5*cm); 
+G4UnionSolid* blocksum_751_752;
+G4GenericTrap* itsatrap;
+block751 =
+	    new G4Box("block751",10.1*cm,40*cm, (14.55/2)*cm); 
+block752 =
+	    new G4Box("block752",19*cm,40*cm, 15.6*cm); //1mm Overlap between the blocks
+	    
+blocksum_751_752= new G4UnionSolid("blocksum_751_752", block751, block752,0, G4ThreeVector
+(9*cm, 0.,-(14.55/2)*cm+15.5*cm+36*cm-0.1*cm));
+
+
+vector <G4TwoVector> vertices;
+
+vertices.push_back (G4TwoVector(10*cm,40*cm));
+vertices.push_back ( G4TwoVector(10*cm,-40*cm));
+vertices.push_back ( G4TwoVector(-10*cm,-40*cm));
+vertices.push_back ( G4TwoVector(-10*cm,40*cm));
+vertices.push_back ( G4TwoVector(28*cm,40*cm));
+vertices.push_back (G4TwoVector(28*cm,-40*cm));
+vertices.push_back ( G4TwoVector(-10*cm,-40*cm));
+vertices.push_back (G4TwoVector(-10*cm,40*cm));
+
+
+itsatrap = new G4GenericTrap("itsatrap",   (21.55/2)*cm,
+         vertices);
+
+
+
+block75= new G4UnionSolid("blocksum_751_752", blocksum_751_752, itsatrap,0, G4ThreeVector
+(0, 0.,(36/2)*cm));
+
+
+
+
+
+G4UnionSolid *subcase_Solid21;
+G4Tubs *subcase_Solid22;
+
+G4RotationMatrix yRot45degblock75;
+yRot45degblock75.rotateY(M_PI*275/180.*rad);
+G4ThreeVector translationblock75(0,0,0);
+
+G4SubtractionSolid *block75minusDetector2;	
+G4SubtractionSolid *block75minusDetector2andhole;	
+
+
+subcase_Solid21= Al_Solid1;
+
+block75minusDetector2=
+new G4SubtractionSolid("block75-subcase_Solid21",block75,subcase_Solid21,
+&yRot45degblock75,translationblock75);
+
+subcase_Solid22= new G4Tubs("subcase_Solid22",
+ 0, 50*mm, 115*mm/2, 0. * deg, 360. * deg);
+
+
+block75minusDetector2andhole=
+new G4SubtractionSolid("block75minusDetector2-subcase_Solid22",
+block75minusDetector2,subcase_Solid22,
+&yRot45degblock75,translationblock75);
+
+
+
+
+
+
+
+
+
 
   block75_Logical =
-	    new G4LogicalVolume(block75, Pb, "block75_Logical", 0, 0, 0);
-	block75vis = new G4VisAttributes(leadcolor);
+	    new G4LogicalVolume(block75minusDetector2andhole, Pb, "block75_Logical", 0, 0, 0);
+	block75vis = new G4VisAttributes(red);
 	block75_Logical->SetVisAttributes(block75vis);
 	
-		new G4PVPlacement(0, G4ThreeVector(20*cm+trans_x ,-15*cm+trans_y, 5*cm-distcollimatortotarget+trans_z), block75_Logical, "block", world_log, 0, 0);
+		new G4PVPlacement(0, G4ThreeVector(15*cm+trans_x ,-15*cm+trans_y, (14.55/2)*cm-distcollimatortotarget+trans_z), block75_Logical, "block", world_log, 0, 0);
 //End Block 75---------------------------------------
+
+
+
+
+
+////Beginning Block 76-------------------------------------
+//G4LogicalVolume *block76_Logical;
+//G4Box *block76; 
+//G4VisAttributes *block76vis;
+//G4UnionSolid *subcase_Solid21;
+//G4Tubs *subcase_Solid22;
+
+//G4RotationMatrix yRot45degblock76;
+//yRot45degblock76.rotateY(M_PI*275/180.*rad);
+//G4ThreeVector translationblock76(0,0,0);
+
+//G4SubtractionSolid *block76minusDetector2;	
+//G4SubtractionSolid *block76minusDetector2andhole;	
+
+
+//subcase_Solid21= Al_Solid1;
+//block76 =
+	    //new G4Box("block76",15*cm,40*cm, 15*cm);
+//block76minusDetector2=
+//new G4SubtractionSolid("block76-subcase_Solid21",block76,subcase_Solid21,
+//&yRot45degblock76,translationblock76);
+
+//subcase_Solid22= new G4Tubs("subcase_Solid22",
+ //0, 50*mm, 115*mm/2, 0. * deg, 360. * deg);
+
+
+//block76minusDetector2andhole=
+//new G4SubtractionSolid("block76minusDetector2-subcase_Solid22",
+//block76minusDetector2,subcase_Solid22,
+//&yRot45degblock76,translationblock76);
+
+
+
+
+
+  //block76_Logical =
+	    //new G4LogicalVolume(block76minusDetector2andhole, Pb, "block76_Logical", 0, 0, 0);
+	//block76vis = new G4VisAttributes(leadcolor);
+	//block76_Logical->SetVisAttributes(block76vis);
+	
+//new G4PVPlacement(0, G4ThreeVector(80*cm+trans_x ,-15*cm+trans_y,
+//+25*cm-distcollimatortotarget+trans_z), block76_Logical, "block", world_log, 0, 0);
+////End Block 76---------------------------------------
+
+
 
 
 
@@ -542,7 +704,7 @@ block81 =
 //Unterscheidet sich vom Source Code aber kompeliert nur so...
 //(G4LogicalVolume* vorangestellt)  und Get_Crystal2_Logical musste durch
 //Get_Logical ersetzt werden.
- G4LogicalVolume* crystal1_Logical = germaniumDetector1->Get_Logical();
+ //G4LogicalVolume* crystal1_Logical = germaniumDetector1->Get_Logical();
 
   new G4PVPlacement(rm1, germaniumDetector1_Position, germaniumDetector1_Logical, "Germanium1_TUD", world_log, false, 0);
 
@@ -551,14 +713,15 @@ block81 =
 
  //BGO of Germanium1_TUD
   
-  BGO* bgo1 = new BGO();
+  // Is already used in Block 32
+  //BGO* bgo1 = new BGO();
   
   G4double bgo1_Distance = -(detectordistance1 + BGO::bgo_Length/2);
   G4ThreeVector bgo1_Position = G4ThreeVector(bgo1_Distance*sin(g1_theta)*cos(g1_phi), bgo1_Distance*cos(g1_theta), bgo1_Distance*sin(g1_theta)*sin(g1_phi));
   
   G4LogicalVolume* bgo1_Logical = bgo1->Get_Logical();
   
-  G4LogicalVolume* bgoCrystal1_Logical = bgo1->Get_Crystal_Logical();
+ // G4LogicalVolume* bgoCrystal1_Logical = bgo1->Get_Crystal_Logical();
   
   new G4PVPlacement(rm1, bgo1_Position, bgo1_Logical, "bgo1", world_log, false, 0);
 
@@ -620,7 +783,7 @@ block81 =
   
   G4LogicalVolume* germaniumDetector2_Logical=germaniumDetector2->Get_Logical();
 // Auch hier musste crystal2_Logical mit Pointer  gemacht werden.
-   G4LogicalVolume* crystal2_Logical = germaniumDetector2->Get_Logical();
+   //G4LogicalVolume* crystal2_Logical = germaniumDetector2->Get_Logical();
   
   new G4PVPlacement(rm2, germaniumDetector2_Position, germaniumDetector2_Logical, "Germanium2", world_log, false, 0);
 
@@ -633,7 +796,7 @@ block81 =
   
   G4LogicalVolume* bgo2_Logical = bgo2->Get_Logical();
   
-  G4LogicalVolume* bgoCrystal2_Logical = bgo2->Get_Crystal_Logical();
+  //G4LogicalVolume* bgoCrystal2_Logical = bgo2->Get_Crystal_Logical();
   
   new G4PVPlacement(rm2, bgo2_Position, bgo2_Logical, "bgo2", world_log, false, 0);
 
@@ -687,7 +850,7 @@ block81 =
   
   G4LogicalVolume* polarimeterDetector_Logical=polarimeterDetector->Get_Logical();
 //Pointer benutzt
-  G4LogicalVolume* crystalp_Logical = polarimeterDetector->Get_Logical();
+  //G4LogicalVolume* crystalp_Logical = polarimeterDetector->Get_Logical();
 
   new G4PVPlacement(rmPol, polarimeterDetector_Position, polarimeterDetector_Logical, "Polarimeter", world_log, false, 0);
 
@@ -700,7 +863,7 @@ block81 =
   
   G4LogicalVolume* bgop_Logical = bgop->Get_Logical();
   //Auch hier wurde G4LogicalVolume* hinzugefügt
-  G4LogicalVolume* bgoCrystalp_Logical = bgop->Get_Crystal_Logical();
+  //G4LogicalVolume* bgoCrystalp_Logical = bgop->Get_Crystal_Logical();
   
   new G4PVPlacement(rmPol, bgop_Position, bgop_Logical, "bgop", world_log, false, 0);
 
