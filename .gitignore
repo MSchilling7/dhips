@@ -13,5 +13,12 @@ dhips
 # Shell Scripts
 open_code.sh
 
-#ROOT output files
+# ROOT output files
 *.root
+
+# merge backup files
+*BACKUP*
+*LOCAL*
+*REMOTE*
+*BASE*
+*.orig
