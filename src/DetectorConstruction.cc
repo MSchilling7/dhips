@@ -214,14 +214,14 @@ G4Box *block21;
 G4VisAttributes *block21vis;
 
 block21 =
-	    new G4Box("block21",10*cm,40*cm, ((100. * mm)+10 * block_z )*0.5);
+	    new G4Box("block21",10*cm,25*cm, ((100. * mm)+10 * block_z )*0.5);
 
   block21_Logical =
 	    new G4LogicalVolume(block21, Fe, "block21_Logical", 0, 0, 0);
 	block21vis = new G4VisAttributes(blue);
 	block21_Logical->SetVisAttributes(block21vis);
 
-	new G4PVPlacement(0, G4ThreeVector(25.*cm+trans_x , -15.*cm+trans_y,-distcollimatortotarget-
+	new G4PVPlacement(0, G4ThreeVector(25.*cm+trans_x , trans_y,-distcollimatortotarget-
 	(10 * block_z+10.*cm)*0.5+trans_z ), block21_Logical, "block", world_log, 0, 0);
 //End of Block21--------------------------------------------------------
 
@@ -248,14 +248,14 @@ G4Box *block23;
 G4VisAttributes *block23vis;
 
 block23 =
-	    new G4Box("block22",10*cm,40*cm, ((100. * mm)+10 * block_z )*0.5);
+	    new G4Box("block22",10*cm,25*cm, ((100. * mm)+10 * block_z )*0.5);
 
   block23_Logical =
 	    new G4LogicalVolume(block23, Fe, "block23_Logical", 0, 0, 0);
 	block23vis = new G4VisAttributes(blue);
 	block23_Logical->SetVisAttributes(block23vis);
 	
-		new G4PVPlacement(0, G4ThreeVector(-25.*cm+trans_x , -15.*cm+trans_y,-distcollimatortotarget-
+		new G4PVPlacement(0, G4ThreeVector(-25.*cm+trans_x , trans_y,-distcollimatortotarget-
 	(10 * block_z+10.*cm)*0.5+trans_z ), block23_Logical, "block", world_log, 0, 0);
 //End Block 23---------------------------------------
 
@@ -265,14 +265,14 @@ G4Box *block24;
 G4VisAttributes *block24vis;
 
 block24 =
-	    new G4Box("block24",15*cm,20*cm, ((100. * mm)+10 * block_z )*0.5);
+	    new G4Box("block24",15*cm,5*cm, ((100. * mm)+10 * block_z )*0.5);
 
   block24_Logical =
 	    new G4LogicalVolume(block24, Fe, "block24_Logical", 0, 0, 0);
 	block24vis = new G4VisAttributes(blue);
 	block24_Logical->SetVisAttributes(block24vis);
 	
-		new G4PVPlacement(0, G4ThreeVector(trans_x , -35.*cm+trans_y,-distcollimatortotarget-
+		new G4PVPlacement(0, G4ThreeVector(trans_x , -20.*cm+trans_y,-distcollimatortotarget-
 	(10 * block_z+10.*cm)*0.5 +trans_z), block24_Logical, "block", world_log, 0, 0);
 //End Block 24---------------------------------------
 
@@ -288,14 +288,14 @@ G4Box *block31;
 G4VisAttributes *block31vis;
 
 block31 =
-	    new G4Box("block31",10*cm,40*cm, 50*cm);
+	    new G4Box("block31",10*cm,25*cm, 50*cm);
 
   block31_Logical =
 	    new G4LogicalVolume(block31, Pb, "block31_Logical", 0, 0, 0);
 	block31vis = new G4VisAttributes(leadcolor);
 	block31_Logical->SetVisAttributes(block31vis);
 	
-		new G4PVPlacement(0, G4ThreeVector(-45*cm+trans_x , -15*cm+trans_y,-distcollimatortotarget-
+		new G4PVPlacement(0, G4ThreeVector(-45*cm+trans_x , trans_y,-distcollimatortotarget-
 	95*cm+50*cm+trans_z), block31_Logical, "block", world_log, 0, 0);
 //End Block 31---------------------------------------
 
@@ -325,7 +325,7 @@ G4SubtractionSolid *block32minusDetector1andhole;
   G4UnionSolid* Al_Solid1 = bgo1->Get_Al_Solid();
 subcase_Solid11= Al_Solid1;
 block32 =
-	    new G4Box("block32",175*mm,40*cm, 40.5*cm);
+	    new G4Box("block32",175*mm,25*cm, 40.5*cm);
 block32minusDetector1=
 new G4SubtractionSolid("block32-subcase_Solid11",block32,subcase_Solid11,
 &yRot45degblock32,translationblock32);
@@ -345,7 +345,7 @@ new G4SubtractionSolid("block32minusDetector1-subcase_Solid12",block32minusDetec
 	block32vis = new G4VisAttributes(leadcolor);
 	block32_Logical->SetVisAttributes(block32vis);
 	
-		new G4PVPlacement(0, G4ThreeVector(disttoendblock32+17.5*cm , -15*cm+trans_y,-distcollimatortotarget-
+		new G4PVPlacement(0, G4ThreeVector(disttoendblock32+17.5*cm , trans_y,-distcollimatortotarget-
 	95*cm+50*cm+90.5*cm+trans_z), block32_Logical, "block", world_log, 0, 0);
 //End Block 32---------------------------------------
 
@@ -356,14 +356,14 @@ G4Box *block33;
 G4VisAttributes *block33vis;
 
 block33 =
-	    new G4Box("block33",15*cm,40*cm, 2.5*cm);
+	    new G4Box("block33",15*cm,25*cm, 2.5*cm);
 
   block33_Logical =
 	    new G4LogicalVolume(block33, Pb, "block33_Logical", 0, 0, 0);
 	block33vis = new G4VisAttributes(leadcolor);
 	block33_Logical->SetVisAttributes(block33vis);
 	
-		new G4PVPlacement(0, G4ThreeVector(-20*cm+trans_x , -15*cm+trans_y,
+		new G4PVPlacement(0, G4ThreeVector(-20*cm+trans_x , 0+trans_y,
 		2.5*cm-distcollimatortotarget+trans_z), block33_Logical, "block", world_log, 0, 0);
 //End Block 33---------------------------------------
 
@@ -400,7 +400,7 @@ block51 =
 	block51vis = new G4VisAttributes(grey);
 	block51_Logical->SetVisAttributes(block51vis);
 	
-		new G4PVPlacement(0, G4ThreeVector(trans_x , -65.*cm+trans_y,-distcollimatortotarget-95*cm+90.5*cm+trans_z), block51_Logical, "block", world_log, 0, 0);
+		new G4PVPlacement(0, G4ThreeVector(trans_x , -35.*cm+trans_y,-distcollimatortotarget-95*cm+90.5*cm+trans_z), block51_Logical, "block", world_log, 0, 0);
 //End Block 51---------------------------------------
 
 //Chamber on the right side
@@ -419,7 +419,7 @@ block61 =
 	block61vis = new G4VisAttributes(leadcolor);
 	block61_Logical->SetVisAttributes(block61vis);
 	
-		new G4PVPlacement(0, G4ThreeVector(-40*cm-40*cm+trans_x , -15*cm-40*cm+12.5*cm+trans_y,-distcollimatortotarget-
+		new G4PVPlacement(0, G4ThreeVector(-40*cm-40*cm+trans_x ,-25*cm+12.5*cm+trans_y,-distcollimatortotarget-
 	95*cm+5*cm+90.5*cm+27*cm+trans_z), block61_Logical, "block", world_log, 0, 0);
 //End Block 61---------------------------------------
 
@@ -438,7 +438,7 @@ block62 =
 	block62vis = new G4VisAttributes(leadcolor);
 	block62_Logical->SetVisAttributes(block62vis);
 	
-		new G4PVPlacement(0, G4ThreeVector(-40*cm-40*cm+trans_x , -15*cm-40*cm+12.5*cm+trans_y,-distcollimatortotarget-
+		new G4PVPlacement(0, G4ThreeVector(-40*cm-40*cm+trans_x , -25*cm+12.5*cm+trans_y,-distcollimatortotarget-
 	95*cm+5*cm+90.5*cm+27*cm+43*cm+trans_z), block62_Logical, "block", world_log, 0, 0);
 //End Block 62---------------------------------------
 
@@ -452,14 +452,14 @@ G4Box *block71;
 G4VisAttributes *block71vis;
 
 block71 =
-	    new G4Box("block71",10*cm,40*cm, 47.5*cm);
+	    new G4Box("block71",10*cm,25*cm, 47.5*cm);
 
   block71_Logical =
 	    new G4LogicalVolume(block71, Pb, "block71_Logical", 0, 0, 0);
 	block71vis = new G4VisAttributes(leadcolor);
 	block71_Logical->SetVisAttributes(block71vis);
 	
-		new G4PVPlacement(0, G4ThreeVector(45.*cm+trans_x , -15.*cm+trans_y,-distcollimatortotarget-
+		new G4PVPlacement(0, G4ThreeVector(45.*cm+trans_x , trans_y,-distcollimatortotarget-
 	95*cm+47.5*cm+trans_z), block71_Logical, "block", world_log, 0, 0);
 //End Block 71---------------------------------------
 
@@ -472,14 +472,14 @@ G4Box *block72;
 G4VisAttributes *block72vis;
 
 block72 =
-	    new G4Box("block72",10*cm,40*cm, 72*cm);
+	    new G4Box("block72",10*cm,25*cm, 72*cm);
 
   block72_Logical =
 	    new G4LogicalVolume(block72, Pb, "block72_Logical", 0, 0, 0);
 	block72vis = new G4VisAttributes(leadcolor);
 	block72_Logical->SetVisAttributes(block72vis);
 	
-		new G4PVPlacement(0, G4ThreeVector(165.*cm+trans_x , -15.*cm+trans_y,-distcollimatortotarget-
+		new G4PVPlacement(0, G4ThreeVector(165.*cm+trans_x , trans_y,-distcollimatortotarget-
 	95*cm+37*cm+72*cm+trans_z), block72_Logical, "block", world_log, 0, 0);
 //End Block 72---------------------------------------
 
@@ -498,7 +498,7 @@ block73 =
 	block73vis = new G4VisAttributes(leadcolor);
 	block73_Logical->SetVisAttributes(block73vis);
 	
-		new G4PVPlacement(0, G4ThreeVector(55.*cm+50*cm+trans_x , -55.*cm+2.5*cm+trans_y,-distcollimatortotarget-
+		new G4PVPlacement(0, G4ThreeVector(55.*cm+50*cm+trans_x , -25.*cm+2.5*cm+trans_y,-distcollimatortotarget-
 	95*cm+37*cm+15*cm+trans_z), block73_Logical, "block", world_log, 0, 0);
 //End Block 73---------------------------------------
 
@@ -511,14 +511,14 @@ G4Box *block74;
 G4VisAttributes *block74vis;
 
 block74 =
-	    new G4Box("block74",30*cm,40*cm, 9.5*cm); 
+	    new G4Box("block74",30*cm,25*cm, 9.5*cm); 
 
   block74_Logical =
 	    new G4LogicalVolume(block74, Pb, "block74_Logical", 0, 0, 0);
 	block74vis = new G4VisAttributes(leadcolor);
 	block74_Logical->SetVisAttributes(block74vis);
 	
-		new G4PVPlacement(0, G4ThreeVector(155*cm-130*cm+trans_x ,-15*cm+trans_y, 181*cm-distcollimatortotarget-
+		new G4PVPlacement(0, G4ThreeVector(155*cm-130*cm+trans_x ,trans_y, 181*cm-distcollimatortotarget-
 	95*cm-9.5*cm+trans_z), block74_Logical, "block", world_log, 0, 0);
 //End Block 74---------------------------------------
 
