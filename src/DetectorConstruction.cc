@@ -22,11 +22,11 @@
 #include "G4TwoVector.hh"
 #include "G4ThreeVector.hh"
 #include "G4Tubs.hh"
+#include "G4GenericTrap.hh"
 #include "G4UnionSolid.hh"
 #include "G4VisAttributes.hh"
 #include "globals.hh"
 #include "G4Sphere.hh"
-#include "G4GenericTrap.hh"
 
 // Units
 #include "G4PhysicalConstants.hh"
@@ -35,9 +35,8 @@
 #include <sstream>
 #include <vector>
 
-using std::vector;
-
 using std::stringstream;
+using std::vector;
 
 DetectorConstruction::DetectorConstruction() {}
 
@@ -65,6 +64,8 @@ G4VPhysicalVolume *DetectorConstruction::Construct() {
 	G4Material *AIR= man->FindOrBuildMaterial("G4_AIR");
 	G4Material *Fe= man->FindOrBuildMaterial("G4_Fe");
 	G4Material *Pb= man->FindOrBuildMaterial("G4_Pb");
+	G4Material *Al= man->FindOrBuildMaterial("G4_Al");
+
 	/************************* World volume *****************/
 
 	G4double world_x = 6. * m; //Total length of World Volume
@@ -102,7 +103,9 @@ G4double trans_z = -400. * mm;
 	 
 	 G4double disttoendblock32= -40*cm+trans_x ;
 	 
-	 G4double detectordistance1 = (abs(disttoendblock32)-(203-45)*mm)/cos(5*deg);
+	 //detectordistance1 should be divided by cosine. For 5 deg the difference is less than 1 in 100000
+	 //G4double detectordistance1 = abs(disttoendblock32)-(192)*mm;//this is the length of bgo
+	 G4double detectordistance1 = 265.*mm;//this is the length of bgo
 	 G4double detectordistance2 = 265.*mm;
 	 G4double poldistance = 265.*mm;
 	 
@@ -175,26 +178,26 @@ block26 =
 //End Block 026---------------------------------------
 
 //Orientation Sphere
-//G4LogicalVolume *Sphere_Logical;
-//G4Sphere *Sphere; 
-//G4VisAttributes *Spherevis;
+G4LogicalVolume *Sphere_Logical;
+G4Sphere *Sphere; 
+G4VisAttributes *Spherevis;
 
-//Sphere =
-//new G4Sphere("Sphere",
-              //0.*cm,
-             //40*cm,
-              //0*deg,
-             //360*deg,
-             //0*deg,
-       //180*deg ) ;
+Sphere =
+new G4Sphere("Sphere",
+              0.*cm,
+             40*cm,
+              0*deg,
+             360*deg,
+             0*deg,
+       180*deg ) ;
              
-             //Sphere_Logical =
-	    //new G4LogicalVolume(Sphere, Fe, "Sphere_Logical", 0, 0, 0);
-	//Spherevis = new G4VisAttributes(red);
-	//Sphere_Logical->SetVisAttributes(Spherevis);
+             Sphere_Logical =
+	    new G4LogicalVolume(Sphere, Fe, "Sphere_Logical", 0, 0, 0);
+	Spherevis = new G4VisAttributes(red);
+	Sphere_Logical->SetVisAttributes(Spherevis);
 
-	//new G4PVPlacement(0, G4ThreeVector(0, 0,0 ), Sphere_Logical, 
-	//"Sphere", world_log, 0, 0);
+	new G4PVPlacement(0, G4ThreeVector(0, 0,0 ), Sphere_Logical, 
+	"Sphere", world_log, 0, 0);
 
 /************************* Iron Shielding *****************/
 // Iron Shielding around the Copper Collimator
@@ -312,9 +315,12 @@ G4UnionSolid *subcase_Solid11;
 G4Tubs *subcase_Solid12;
 
 G4RotationMatrix yRot45degblock32;
-yRot45degblock32.rotateY(M_PI*275/180.*rad);
+yRot45degblock32.rotateY(M_PI*95/180.*rad);
 G4ThreeVector translationblock32(0,0,0);
+//G4RotationMatrix yRot45degblock32;
+//yRot45degblock32.rotateY(M_PI*95/180.*rad);
 
+G4Tubs *subcase_Solid1;
 G4SubtractionSolid *block32minusDetector1;	
 G4SubtractionSolid *block32minusDetector1andhole;	
 //The distance from the target to other side of block32 is used here and 
@@ -322,13 +328,14 @@ G4SubtractionSolid *block32minusDetector1andhole;
 
 
 
-  G4UnionSolid* Al_Solid1 = bgo1->Get_Al_Solid();
+G4UnionSolid* Al_Solid1 = bgo1->Get_Al_Case_Solid();
 subcase_Solid11= Al_Solid1;
 block32 =
 	    new G4Box("block32",175*mm,40*cm, 40.5*cm);
 block32minusDetector1=
-new G4SubtractionSolid("block32-subcase_Solid11",block32,subcase_Solid11,
-&yRot45degblock32,translationblock32);
+//new G4SubtractionSolid("block32-subcase_Solid11",block32,subcase_Solid11,
+//&yRot45degblock32,translationblock32);
+new G4SubtractionSolid("block32-subcase_Solid11",block32,subcase_Solid11, &yRot45degblock32, translationblock32);
 
 subcase_Solid12= new G4Tubs("subcase_Solid12",
  0, 50*mm, 115*mm/2, 0. * deg, 360. * deg);
@@ -340,13 +347,17 @@ new G4SubtractionSolid("block32minusDetector1-subcase_Solid12",block32minusDetec
 
 
 
+//  block32_Logical =
+//	    new G4LogicalVolume(block32minusDetector1andhole, Pb, "block32_Logical", 0, 0, 0);
   block32_Logical =
-	    new G4LogicalVolume(block32minusDetector1andhole, Pb, "block32_Logical", 0, 0, 0);
+	    new G4LogicalVolume(block32minusDetector1, Pb, "block32_Logical", 0, 0, 0);
 	block32vis = new G4VisAttributes(leadcolor);
 	block32_Logical->SetVisAttributes(block32vis);
 	
 		new G4PVPlacement(0, G4ThreeVector(disttoendblock32+17.5*cm , -15*cm+trans_y,-distcollimatortotarget-
 	95*cm+50*cm+90.5*cm+trans_z), block32_Logical, "block", world_log, 0, 0);
+
+
 //End Block 32---------------------------------------
 
 //Small intermediate Block to fill a Gap between block32 and block31
@@ -547,12 +558,12 @@ blocksum_751_752= new G4UnionSolid("blocksum_751_752", block751, block752,0, G4T
 vector <G4TwoVector> vertices;
 
 vertices.push_back (G4TwoVector(10*cm,40*cm));
-vertices.push_back ( G4TwoVector(10*cm,-40*cm));
-vertices.push_back ( G4TwoVector(-10*cm,-40*cm));
-vertices.push_back ( G4TwoVector(-10*cm,40*cm));
-vertices.push_back ( G4TwoVector(28*cm,40*cm));
+vertices.push_back (G4TwoVector(10*cm,-40*cm));
+vertices.push_back (G4TwoVector(-10*cm,-40*cm));
+vertices.push_back (G4TwoVector(-10*cm,40*cm));
+vertices.push_back (G4TwoVector(28*cm,40*cm));
 vertices.push_back (G4TwoVector(28*cm,-40*cm));
-vertices.push_back ( G4TwoVector(-10*cm,-40*cm));
+vertices.push_back (G4TwoVector(-10*cm,-40*cm));
 vertices.push_back (G4TwoVector(-10*cm,40*cm));
 
 
@@ -579,36 +590,28 @@ G4SubtractionSolid *block75minusDetector2;
 G4SubtractionSolid *block75minusDetector2andhole;	
 
 
-subcase_Solid21= Al_Solid1;
-
-block75minusDetector2=
-new G4SubtractionSolid("block75-subcase_Solid21",block75,subcase_Solid21,
-&yRot45degblock75,translationblock75);
-
-subcase_Solid22= new G4Tubs("subcase_Solid22",
- 0, 50*mm, 115*mm/2, 0. * deg, 360. * deg);
-
-
-block75minusDetector2andhole=
-new G4SubtractionSolid("block75minusDetector2-subcase_Solid22",
-block75minusDetector2,subcase_Solid22,
-&yRot45degblock75,translationblock75);
-
-
-
-
-
-
-
-
-
-
-  block75_Logical =
-	    new G4LogicalVolume(block75minusDetector2andhole, Pb, "block75_Logical", 0, 0, 0);
-	block75vis = new G4VisAttributes(red);
-	block75_Logical->SetVisAttributes(block75vis);
-	
-		new G4PVPlacement(0, G4ThreeVector(15*cm+trans_x ,-15*cm+trans_y, (14.55/2)*cm-distcollimatortotarget+trans_z), block75_Logical, "block", world_log, 0, 0);
+//subcase_Solid21= Al_Solid1;
+//
+//block75minusDetector2=
+//new G4SubtractionSolid("block75-subcase_Solid21",block75,subcase_Solid21,
+//&yRot45degblock75,translationblock75);
+//
+//subcase_Solid22= new G4Tubs("subcase_Solid22",
+// 0, 50*mm, 115*mm/2, 0. * deg, 360. * deg);
+//
+//
+//block75minusDetector2andhole=
+//new G4SubtractionSolid("block75minusDetector2-subcase_Solid22",
+//block75minusDetector2,subcase_Solid22,
+//&yRot45degblock75,translationblock75);
+//
+//  block75_Logical =
+//	    new G4LogicalVolume(block75minusDetector2andhole, Pb, "block75_Logical", 0, 0, 0);
+//	block75vis = new G4VisAttributes(red);
+//	block75_Logical->SetVisAttributes(block75vis);
+//	
+//		new G4PVPlacement(0, G4ThreeVector(15*cm+trans_x ,-15*cm+trans_y, (14.55/2)*cm-distcollimatortotarget+trans_z), block75_Logical, "block", world_log, 0, 0);
+//
 //End Block 75---------------------------------------
 
 
@@ -716,7 +719,7 @@ block81 =
   // Is already used in Block 32
   //BGO* bgo1 = new BGO();
   
-  G4double bgo1_Distance = -(detectordistance1 + BGO::bgo_Length/2);
+  G4double bgo1_Distance = -(detectordistance1 + bgo1->Get_Length()/2);
   G4ThreeVector bgo1_Position = G4ThreeVector(bgo1_Distance*sin(g1_theta)*cos(g1_phi), bgo1_Distance*cos(g1_theta), bgo1_Distance*sin(g1_theta)*sin(g1_phi));
   
   G4LogicalVolume* bgo1_Logical = bgo1->Get_Logical();
@@ -791,7 +794,7 @@ block81 =
   
   BGO* bgo2 = new BGO();
   
-  G4double bgo2_Distance = -(detectordistance2 + BGO::bgo_Length/2);
+  G4double bgo2_Distance = -(detectordistance2 + bgo2->Get_Length()/2);
   G4ThreeVector bgo2_Position = G4ThreeVector(bgo2_Distance*sin(g2_theta)*cos(g2_phi), bgo2_Distance*cos(g2_theta), bgo2_Distance*sin(g2_theta)*sin(g2_phi));
   
   G4LogicalVolume* bgo2_Logical = bgo2->Get_Logical();
@@ -858,7 +861,7 @@ block81 =
   
   BGO* bgop = new BGO();
   
-  G4double bgop_Distance = -(poldistance + BGO::bgo_Length/2);
+  G4double bgop_Distance = -(poldistance + bgop->Get_Length()/2);
   G4ThreeVector bgop_Position = G4ThreeVector(bgop_Distance*sin(pol_theta)*cos(pol_phi), bgop_Distance*cos(pol_theta), bgop_Distance*sin(pol_theta)*sin(pol_phi));
   
   G4LogicalVolume* bgop_Logical = bgop->Get_Logical();
@@ -894,9 +897,6 @@ block81 =
   //pol_Filter_Pb_Logical->SetVisAttributes(grey);
   
   //new G4PVPlacement(rmPol,pol_Filter_Position,pol_Filter_Pb_Logical, "FilterPol_Lead", world_log, false, 0);
-
-
-
 
 // /control/execute init_vis.mac
 
