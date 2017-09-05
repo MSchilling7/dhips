@@ -6,10 +6,11 @@
 class RadiatorTarget
 {
 public:
-	RadiatorTarget(G4double target_z, G4String radiator_material);	
+	RadiatorTarget(G4double target_z, G4String radiator_material, G4String target_name);	
 	~RadiatorTarget(){};
 	G4LogicalVolume *Get_Logical(){ return radiatorTarget; };
 	G4double Get_Z(){ return radiator_Mother_z; };
+	G4double Get_Window_Position(){ return radiator_Window_Position; };
 
 private:
 	G4LogicalVolume *radiatorTarget;
@@ -18,6 +19,7 @@ private:
 	G4double radiator_Mother_x;
 	G4double radiator_Mother_y;
 	G4double radiator_Mother_z;
+	G4double radiator_Window_Position;
 };
 
 #endif

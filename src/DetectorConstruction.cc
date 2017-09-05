@@ -157,10 +157,10 @@ logical_volume_name << "block" << i << "_Logical";
 //
 //	new G4PVPlacement(0, G4ThreeVector(0., 0., -distcollimatortotarget + trans_z -10.*mm - 11.*block_z), box_Logical, "box", world_log, false, 0);
 
-	RadiatorTarget *radiatorTarget1 = new RadiatorTarget(3.*mm, "Cu");
+	RadiatorTarget *radiatorTarget1 = new RadiatorTarget(3.*mm, "Cu", "Target_1");
 	G4LogicalVolume *radiator_Holder1_Logical = radiatorTarget1->Get_Logical();
 
-	new G4PVPlacement(0, G4ThreeVector(0., 0., -distcollimatortotarget + trans_z -11.*block_z - radiator_holder1_to_collimator - radiatorTarget1->Get_Z()), radiator_Holder1_Logical, "radiator_Holder1", world_log, false, 0);
+	new G4PVPlacement(0, G4ThreeVector(0., radiatorTarget1->Get_Window_Position(), -distcollimatortotarget + trans_z -11.*block_z - radiator_holder1_to_collimator - radiatorTarget1->Get_Z()), radiator_Holder1_Logical, "radiator_Holder1", world_log, false, 0);
 
 /************************* Red Boxes for Orientation *****************/
 
