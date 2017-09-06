@@ -64,6 +64,7 @@ G4VPhysicalVolume *DetectorConstruction::Construct() {
 
 	G4Material *Cu = man->FindOrBuildMaterial("G4_Cu");
 	G4Material *AIR= man->FindOrBuildMaterial("G4_AIR");
+	G4Material *VACUUM= man->FindOrBuildMaterial("G4_Galactic");
 	G4Material *Fe= man->FindOrBuildMaterial("G4_Fe");
 	G4Material *Pb= man->FindOrBuildMaterial("G4_Pb");
 	G4Material *Al= man->FindOrBuildMaterial("G4_Al");
@@ -125,6 +126,7 @@ G4LogicalVolume *blocks_Logical[10];
 stringstream logical_volume_name;
 G4double distcollimatortotarget=162. * mm;
 G4VisAttributes *blockvis;
+
 	// _________________________ Block Loop _________________________
 for (G4int i=0; i<10;++i){
 	 hole_radius = (colholeradius_max-colholradiusstep*i) * mm;
@@ -145,6 +147,45 @@ logical_volume_name << "block" << i << "_Logical";
 	new G4PVPlacement(0, G4ThreeVector(trans_x , trans_y, -distcollimatortotarget-(i+0.5) * block_z+trans_z), blocks_Logical[i], "block",
 	                  world_log, 0, 0);}
 
+/************************* Beam pipe *****************/
+
+	G4double beam_pipe_to_collimator = 180.*mm;
+
+	G4double exit_Window_Thickness = 0.1*mm; // Estimated
+	G4double beamPipe_Inner_Radius = 19.*mm; // Estimated
+	G4double beamPipe_Outer_Radius_Small = 21.25*mm;
+	G4double beamPipe_Outer_Radius_Large = 35.*mm;
+	G4double beamPipe_Small_Radius_Length = 200.*mm; // Estimated
+	G4double beamPipe_Large_Radius_Length = 25.*mm;
+
+	G4Tubs *beamPipe_Large_Radius_Solid = new G4Tubs("beamPipe_Large_Radius_Solid", beamPipe_Inner_Radius, beamPipe_Outer_Radius_Large, beamPipe_Large_Radius_Length*0.5, 0., twopi);
+
+	G4LogicalVolume *beamPipe_Large_Radius_Logical = new G4LogicalVolume(beamPipe_Large_Radius_Solid, Al, "beamPipe_Large_Radius_Logical");
+	beamPipe_Large_Radius_Logical->SetVisAttributes(grey);
+
+	new G4PVPlacement(0, G4ThreeVector(0., 0., -distcollimatortotarget + trans_z -11.*block_z - beam_pipe_to_collimator - beamPipe_Large_Radius_Length*0.5), beamPipe_Large_Radius_Logical, "beamPipe_Large_Radius", world_log, false, 0);
+
+	G4Tubs *beamPipe_Exit_Window_Solid = new G4Tubs("beamPipe_Exit_Window_Solid", 0., beamPipe_Inner_Radius, exit_Window_Thickness*0.5, 0., twopi);
+
+	G4LogicalVolume *beamPipe_Exit_Window_Logical = new G4LogicalVolume(beamPipe_Exit_Window_Solid, Al, "beamPipe_Exit_Window_Logical");
+	beamPipe_Exit_Window_Logical->SetVisAttributes(grey);
+
+	new G4PVPlacement(0, G4ThreeVector(0., 0., -distcollimatortotarget + trans_z -11.*block_z - beam_pipe_to_collimator - beamPipe_Large_Radius_Length*0.5), beamPipe_Exit_Window_Logical, "beamPipe_Exit_Window", world_log, false, 0);
+
+	G4Tubs *beamPipe_Small_Radius_Solid = new G4Tubs("beamPipe_Small_Radius_Solid", beamPipe_Inner_Radius, beamPipe_Outer_Radius_Small, beamPipe_Small_Radius_Length*0.5, 0., twopi);
+
+	G4LogicalVolume *beamPipe_Small_Radius_Logical = new G4LogicalVolume(beamPipe_Small_Radius_Solid, Al, "beamPipe_Small_Radius_Logical");
+	beamPipe_Small_Radius_Logical->SetVisAttributes(grey);
+
+	new G4PVPlacement(0, G4ThreeVector(0., 0., -distcollimatortotarget + trans_z -11.*block_z - beam_pipe_to_collimator - beamPipe_Large_Radius_Length - beamPipe_Small_Radius_Length*0.5), beamPipe_Small_Radius_Logical, "beamPipe_Small_Radius", world_log, false, 0);
+
+	G4Tubs *beamPipe_Vacuum_Solid = new G4Tubs("beamPipe_Vacuum_Solid", 0., beamPipe_Inner_Radius, (beamPipe_Small_Radius_Length + 0.5*beamPipe_Large_Radius_Length)*0.5 - 0.5*exit_Window_Thickness, 0., twopi);
+
+	G4LogicalVolume *beamPipe_Vacuum_Logical = new G4LogicalVolume(beamPipe_Vacuum_Solid, VACUUM, "beamPipe_Vacuum_Logical");
+	beamPipe_Vacuum_Logical->SetVisAttributes(cyan);
+
+	new G4PVPlacement(0, G4ThreeVector(0., 0., -distcollimatortotarget + trans_z -11.*block_z - beam_pipe_to_collimator - beamPipe_Large_Radius_Length - beamPipe_Small_Radius_Length + (beamPipe_Small_Radius_Length + 0.5*beamPipe_Large_Radius_Length)*0.5), beamPipe_Vacuum_Logical, "beamPipe_Vacuum", world_log, false, 0);
+
 /************************* Radiator targets *****************/
 
 	// Distance from the entrance of the collimator to the side of the radiator target holder that faces the collimator
@@ -163,6 +204,34 @@ logical_volume_name << "block" << i << "_Logical";
 	G4LogicalVolume *radiator_Holder2_Logical = radiatorTarget2->Get_Logical();
 
 	new G4PVPlacement(0, G4ThreeVector(0., radiatorTarget2->Get_Window_Position(), -distcollimatortotarget + trans_z -11.*block_z - radiator_holder2_to_collimator - radiatorTarget2->Get_Z()), radiator_Holder2_Logical, "radiator_Holder2", world_log, false, 0);
+
+/************************* Target holder *****************/
+
+	G4double nrf_Target_Holder_Pole_Radius = 3.*mm;
+	G4double nrf_Target_Holder_Pole_Length = 104.*mm;
+
+	G4double nrf_Target_Holder_Inner_Radius = 35.*mm;
+	G4double nrf_Target_Holder_Outer_Radius = 39.*mm;
+	G4double nrf_Target_Holder_Thickness = 3.*mm;
+	G4double nrf_Target_Holder_Angle_Min = 0.*deg;
+	G4double nrf_Target_Holder_Angle_Max = 360.*deg;
+
+	G4Tubs *nrf_Target_Holder_Solid = new G4Tubs("nrf_Target_Holder_Solid", nrf_Target_Holder_Inner_Radius, nrf_Target_Holder_Outer_Radius, nrf_Target_Holder_Thickness*0.5, nrf_Target_Holder_Angle_Min, nrf_Target_Holder_Angle_Max);
+
+	G4LogicalVolume *nrf_Target_Holder_Logical = new G4LogicalVolume(nrf_Target_Holder_Solid, Al, "nrf_Target_Holder_Logical");
+	nrf_Target_Holder_Logical->SetVisAttributes(grey);
+
+	new G4PVPlacement(0, G4ThreeVector(0., 0., 0.), nrf_Target_Holder_Logical, "nrf_Target_Holder", world_log, false, 0);
+
+	G4RotationMatrix *xRotPole = new G4RotationMatrix();
+	xRotPole->rotateX(90.*deg);
+
+	G4Tubs *nrf_Target_Holder_Pole_Solid = new G4Tubs("nrf_Target_Holder_Pole_Solid", 0., nrf_Target_Holder_Pole_Radius, nrf_Target_Holder_Pole_Length*0.5, 0., twopi);
+
+	G4LogicalVolume *nrf_Target_Holder_Pole_Logical = new G4LogicalVolume(nrf_Target_Holder_Pole_Solid, Al, "nrf_Target_Holder_Pole_Logical");
+	nrf_Target_Holder_Pole_Logical->SetVisAttributes(grey);
+
+	new G4PVPlacement(xRotPole, G4ThreeVector(0., -nrf_Target_Holder_Outer_Radius - nrf_Target_Holder_Pole_Length*0.5, 0.), nrf_Target_Holder_Pole_Logical, "nrf_Target_Holder_Pole", world_log, false, 0);
 
 /************************* Red Boxes for Orientation *****************/
 

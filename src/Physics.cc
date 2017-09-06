@@ -85,7 +85,7 @@ void Physics::ConstructProcess() {
 	ConstructEMPenelope();
 	// ConstructEMLivermore();
 	// ConstructHPNeutron();
-	// ConstructChargedParticle();
+	ConstructChargedParticle();
 }
 
 // Penelope Models
