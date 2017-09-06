@@ -304,13 +304,14 @@ new G4Sphere("Sphere",
 //Angles and Distances for Detector1
  Germanium1_TUD* germaniumDetector1=new Germanium1_TUD("Germanium1_TUD");
 
-  G4double g1_Distance = -(detectordistance1 + germaniumDetector1->Get_Length());
+  BGO* bgo1 = new BGO(); 
+
+  G4double g1_Distance = -(detectordistance1 + germaniumDetector1->Get_Length()*0.5 + bgo1->Get_Length()) + bgo1->Get_Max_Penetration_Depth();
   
   G4double g1_theta=90.*deg;
   G4double g1_phi=5.*deg;
   G4double g1_Angle=g1_phi-90.*deg;
   
-  BGO* bgo1 = new BGO(); 
   
    G4double bgo1_Distance = -(detectordistance1 + bgo1->Get_Length()/2);
   G4ThreeVector bgo1_Position = G4ThreeVector
@@ -321,13 +322,14 @@ new G4Sphere("Sphere",
 //Angles and Distances for Detector2
  Germanium2_TUD* germaniumDetector2=new Germanium2_TUD("Germanium2_TUD");
   
-  G4double g2_Distance = -(detectordistance2 + germaniumDetector2->Get_Length());
+    BGO* bgo2 = new BGO();
 
+  //G4double g2_Distance = -(detectordistance2 + germaniumDetector2->Get_Length());
+  G4double g2_Distance = -(detectordistance2 + germaniumDetector2->Get_Length()*0.5 + bgo2->Get_Length()) + bgo2->Get_Max_Penetration_Depth();
   G4double g2_theta=90.*deg;
   G4double g2_phi= 140.*deg;
   G4double g2_Angle= g2_phi-90*deg;
   
-    BGO* bgo2 = new BGO();
   
   G4double bgo2_Distance = -(detectordistance2 + bgo2->Get_Length()/2);
   G4ThreeVector bgo2_Position = G4ThreeVector
@@ -340,13 +342,14 @@ G4double leadfilter2_Distance = -(-18*cm+detectordistance1 + germaniumDetector1-
 //Angles and Distances for Polarimeter
   Polarimeter_TUD* polarimeterDetector=new Polarimeter_TUD("Polarimeter_TUD");
 
-  G4double pol_Distance = -(poldistance + polarimeterDetector->Get_Length());
+BGO* bgop = new BGO();
+
+  G4double pol_Distance = -(poldistance + polarimeterDetector->Get_Length()*0.5 + bgop->Get_Length()) + bgop->Get_Max_Penetration_Depth();
   
   G4double pol_theta=90.*deg;
   G4double pol_phi=180.*deg;
   G4double pol_Angle=pol_phi-90.*deg;
 
-BGO* bgop = new BGO();
   
   G4double bgop_Distance = -(poldistance + bgop->Get_Length()/2);
   G4ThreeVector bgop_Position = G4ThreeVector
