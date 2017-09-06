@@ -595,7 +595,7 @@ G4VisAttributes *block75vis;
 G4UnionSolid* blocksum_751_752;
 G4GenericTrap* itsatrap;
 block751 =
-	    new G4Box("block751",5.1*cm,40*cm, (14.55/2)*cm); 
+	    new G4Box("block751",5.*cm,40*cm, (14.55/2)*cm); 
 block752 =
 	    new G4Box("block752",14.*cm,40*cm, 15.6*cm); //1mm Overlap between the blocks
 	    
@@ -603,20 +603,20 @@ blocksum_751_752= new G4UnionSolid("blocksum_751_752", block751, block752,0, G4T
 (9*cm, 0.,-(14.55/2)*cm+15.5*cm+36*cm-0.1*cm));
 
 
-vector <G4TwoVector> vertices;
+vector <G4TwoVector> vertices1;
 
-vertices.push_back (G4TwoVector(5.*cm,40*cm));
-vertices.push_back (G4TwoVector(5.*cm,-40*cm));
-vertices.push_back (G4TwoVector(-5.*cm,-40*cm));
-vertices.push_back (G4TwoVector(-5.*cm,40*cm));
-vertices.push_back (G4TwoVector(23.*cm,40*cm));
-vertices.push_back (G4TwoVector(23.*cm,-40*cm));
-vertices.push_back (G4TwoVector(-5.*cm,-40*cm));
-vertices.push_back (G4TwoVector(-5.*cm,40*cm));
+vertices1.push_back (G4TwoVector(5.*cm,40*cm));
+vertices1.push_back (G4TwoVector(5.*cm,-40*cm));
+vertices1.push_back (G4TwoVector(-5.*cm,-40*cm));
+vertices1.push_back (G4TwoVector(-5.*cm,40*cm));
+vertices1.push_back (G4TwoVector(23.*cm,40*cm));
+vertices1.push_back (G4TwoVector(23.*cm,-40*cm));
+vertices1.push_back (G4TwoVector(-5.*cm,-40*cm));
+vertices1.push_back (G4TwoVector(-5.*cm,40*cm));
 
 
 itsatrap = new G4GenericTrap("itsatrap",   (21.55/2)*cm,
-         vertices);
+         vertices1);
 
 
 
@@ -641,7 +641,7 @@ G4double bgo21_Distance=bgo2_Distance+10*cm;
 G4RotationMatrix yRot45degblock75;
 yRot45degblock75.rotateY(M_PI*230/180.*rad);
 G4ThreeVector translationblock75(
--(17*cm+trans_x) +bgo21_Distance*sin(g2_theta)*cos(g2_phi),
+-(17.5*cm+trans_x) +bgo21_Distance*sin(g2_theta)*cos(g2_phi),
 -trans_y+bgo21_Distance*cos(g2_theta),
 -(-distcollimatortotarget+14.55/2*cm-35*cm	+trans_z)+bgo21_Distance*sin(g2_theta)*sin(g2_phi)
 );
@@ -684,7 +684,7 @@ G4double bgop1_Distance=bgop_Distance+10*cm;
 G4RotationMatrix yRot45degblock75pol;
 yRot45degblock75pol.rotateY(M_PI*270/180.*rad);
 G4ThreeVector translationblock75pol(
--(17*cm+trans_x) +bgop1_Distance*sin(pol_theta)*cos(pol_phi),
+-(17.5*cm+trans_x) +bgop1_Distance*sin(pol_theta)*cos(pol_phi),
 -trans_y+bgop1_Distance*cos(pol_theta),
 -(-distcollimatortotarget+14.55/2*cm-35*cm	+trans_z)+bgop1_Distance*sin(pol_theta)*sin(pol_phi)
 );
@@ -724,7 +724,7 @@ new G4SubtractionSolid("block75minusDetector2pol-subcase_Solidpol2",block75minus
 	block75vis = new G4VisAttributes(leadcolor);
 	block75_Logical->SetVisAttributes(block75vis);
 	
-		new G4PVPlacement(0, G4ThreeVector(17*cm+trans_x ,trans_y,
+		new G4PVPlacement(0, G4ThreeVector(17.5*cm+trans_x ,trans_y,
 		 -distcollimatortotarget+14.55/2*cm-35*cm
 	+trans_z), block75_Logical, "block", world_log, 0, 0);
 
@@ -872,7 +872,7 @@ block91 =
 
 
 //End Block 91
-// Specially formed Block on the left side of the chamber
+//  Block on the left side of the chamber
 //Beginning Block 92
 
 
@@ -881,7 +881,7 @@ G4Box *block92;
 G4VisAttributes *block92vis;
 
 block92 =
-	    new G4Box("block92",3.75*cm,40*cm,19*cm);
+	    new G4Box("block92",3.75*cm,40*cm,19*cm+1.131*cm);
 
   block92_Logical =
 	    new G4LogicalVolume(block92, Pb, "block92_Logical", 0, 0, 0);
@@ -889,7 +889,7 @@ block92 =
 	block92_Logical->SetVisAttributes(block92vis);
 	
 	new G4PVPlacement(0, G4ThreeVector(+8.75*cm+trans_x , trans_y,-distcollimatortotarget-
-	+19*cm+trans_z ), block92_Logical, "block", world_log, 0, 0);
+	+19*cm+1.131*cm+trans_z ), block92_Logical, "block", world_log, 0, 0);
 
 
 
