@@ -240,42 +240,42 @@ logical_volume_name << "block" << i << "_Logical";
 
 //Block around target
 //Beginning Block 026-------------------------------------
-G4LogicalVolume *block26_Logical;
-G4Box *block26; 
-G4VisAttributes *block26vis;
+//G4LogicalVolume *block26_Logical;
+//G4Box *block26; 
+//G4VisAttributes *block26vis;
 
-block26 =
-	    new G4Box("block26",1*cm,1*cm, 1*cm);
+//block26 =
+	    //new G4Box("block26",1*cm,1*cm, 1*cm);
 
-  block26_Logical =
-	    new G4LogicalVolume(block26, Fe, "block26_Logical", 0, 0, 0);
-	block26vis = new G4VisAttributes(red);
-	block26_Logical->SetVisAttributes(block26vis);
+  //block26_Logical =
+	    //new G4LogicalVolume(block26, Fe, "block26_Logical", 0, 0, 0);
+	//block26vis = new G4VisAttributes(red);
+	//block26_Logical->SetVisAttributes(block26vis);
 
-	new G4PVPlacement(0, G4ThreeVector(0, 0,0 ), block26_Logical, "block", world_log, 0, 0);
+	//new G4PVPlacement(0, G4ThreeVector(0, 0,0 ), block26_Logical, "block", world_log, 0, 0);
 //End Block 026---------------------------------------
 
 //Orientation Sphere
-G4LogicalVolume *Sphere_Logical;
-G4Sphere *Sphere; 
-G4VisAttributes *Spherevis;
+//G4LogicalVolume *Sphere_Logical;
+//G4Sphere *Sphere; 
+//G4VisAttributes *Spherevis;
 
-Sphere =
-new G4Sphere("Sphere",
-              0.*cm,
-             12.5*cm,
-              0*deg,
-             360*deg,
-             0*deg,
-       180*deg ) ;
+//Sphere =
+//new G4Sphere("Sphere",
+              //0.*cm,
+             //12.5*cm,
+              //0*deg,
+             //360*deg,
+             //0*deg,
+       //180*deg ) ;
              
-             Sphere_Logical =
-	    new G4LogicalVolume(Sphere, Fe, "Sphere_Logical", 0, 0, 0);
-	Spherevis = new G4VisAttributes(red);
-	Sphere_Logical->SetVisAttributes(Spherevis);
+             //Sphere_Logical =
+	    //new G4LogicalVolume(Sphere, Air, "Sphere_Logical", 0, 0, 0);
+	//Spherevis = new G4VisAttributes(red);
+	//Sphere_Logical->SetVisAttributes(Spherevis);
 
-	new G4PVPlacement(0, G4ThreeVector(0, 0,0 ), Sphere_Logical, 
-	"Sphere", world_log, 0, 0);
+	//new G4PVPlacement(0, G4ThreeVector(0, 0,0 ), Sphere_Logical, 
+	//"Sphere", world_log, 0, 0);
 
 
 /************************* Important Paramters*****************/
