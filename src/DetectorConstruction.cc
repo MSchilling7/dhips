@@ -36,9 +36,12 @@
 
 #include <sstream>
 #include <vector>
+#include <iostream>
 
 using std::stringstream;
 using std::vector;
+using std::cout;
+using std::endl;
 
 DetectorConstruction::DetectorConstruction() {}
 
@@ -179,6 +182,8 @@ logical_volume_name << "block" << i << "_Logical";
 
 	new G4PVPlacement(0, G4ThreeVector(0., 0., -distcollimatortotarget + trans_z -11.*block_z - beam_pipe_to_collimator - beamPipe_Large_Radius_Length - beamPipe_Small_Radius_Length*0.5), beamPipe_Small_Radius_Logical, "beamPipe_Small_Radius", world_log, false, 0);
 
+	cout << "DetectorConstruction.cc: Construct(): Beam pipe in simulation starts at z = " << -distcollimatortotarget + trans_z -11.*block_z - beam_pipe_to_collimator - beamPipe_Large_Radius_Length - beamPipe_Small_Radius_Length*0.5 << " mm" << endl;
+
 	G4Tubs *beamPipe_Vacuum_Solid = new G4Tubs("beamPipe_Vacuum_Solid", 0., beamPipe_Inner_Radius, (beamPipe_Small_Radius_Length + 0.5*beamPipe_Large_Radius_Length)*0.5 - 0.5*exit_Window_Thickness, 0., twopi);
 
 	G4LogicalVolume *beamPipe_Vacuum_Logical = new G4LogicalVolume(beamPipe_Vacuum_Solid, VACUUM, "beamPipe_Vacuum_Logical");
@@ -213,15 +218,31 @@ logical_volume_name << "block" << i << "_Logical";
 	G4double nrf_Target_Holder_Inner_Radius = 35.*mm;
 	G4double nrf_Target_Holder_Outer_Radius = 39.*mm;
 	G4double nrf_Target_Holder_Thickness = 3.*mm;
-	G4double nrf_Target_Holder_Angle_Min = 0.*deg;
-	G4double nrf_Target_Holder_Angle_Max = 360.*deg;
+	G4double nrf_Target_Holder_Angle_Min1 = 0.*deg;
+	G4double nrf_Target_Holder_Angle_Max1 = 137.*deg;
+	G4double nrf_Target_Holder_Angle_Min2 = 0.*deg;
+	G4double nrf_Target_Holder_Angle_Max2 = 137.*deg;
 
-	G4Tubs *nrf_Target_Holder_Solid = new G4Tubs("nrf_Target_Holder_Solid", nrf_Target_Holder_Inner_Radius, nrf_Target_Holder_Outer_Radius, nrf_Target_Holder_Thickness*0.5, nrf_Target_Holder_Angle_Min, nrf_Target_Holder_Angle_Max);
+	G4Tubs *nrf_Target_Holder_Solid1 = new G4Tubs("nrf_Target_Holder_Solid1", nrf_Target_Holder_Inner_Radius, nrf_Target_Holder_Outer_Radius, nrf_Target_Holder_Thickness*0.5, nrf_Target_Holder_Angle_Min1, nrf_Target_Holder_Angle_Max1);
 
-	G4LogicalVolume *nrf_Target_Holder_Logical = new G4LogicalVolume(nrf_Target_Holder_Solid, Al, "nrf_Target_Holder_Logical");
-	nrf_Target_Holder_Logical->SetVisAttributes(grey);
+	G4LogicalVolume *nrf_Target_Holder_Logical1 = new G4LogicalVolume(nrf_Target_Holder_Solid1, Al, "nrf_Target_Holder_Logical1");
+	nrf_Target_Holder_Logical1->SetVisAttributes(grey);
 
-	new G4PVPlacement(0, G4ThreeVector(0., 0., 0.), nrf_Target_Holder_Logical, "nrf_Target_Holder", world_log, false, 0);
+	G4RotationMatrix *rotNRFTargetHolder1 = new G4RotationMatrix();
+	rotNRFTargetHolder1->rotateY(180.*deg);
+
+	new G4PVPlacement(rotNRFTargetHolder1, G4ThreeVector(0., 0., 0.), nrf_Target_Holder_Logical1, "nrf_Target_Holder1", world_log, false, 0);
+
+	G4Tubs *nrf_Target_Holder_Solid2 = new G4Tubs("nrf_Target_Holder_Solid2", nrf_Target_Holder_Inner_Radius, nrf_Target_Holder_Outer_Radius, nrf_Target_Holder_Thickness*0.5, nrf_Target_Holder_Angle_Min2, nrf_Target_Holder_Angle_Max2);
+
+	G4LogicalVolume *nrf_Target_Holder_Logical2 = new G4LogicalVolume(nrf_Target_Holder_Solid2, Al, "nrf_Target_Holder_Logical2");
+	nrf_Target_Holder_Logical2->SetVisAttributes(grey);
+
+	G4RotationMatrix *rotNRFTargetHolder2 = new G4RotationMatrix();
+	rotNRFTargetHolder2->rotateX(180.*deg);
+	rotNRFTargetHolder2->rotateY(180.*deg);
+
+	new G4PVPlacement(rotNRFTargetHolder2, G4ThreeVector(0., 0., 0.), nrf_Target_Holder_Logical2, "nrf_Target_Holder2", world_log, false, 0);
 
 	G4RotationMatrix *xRotPole = new G4RotationMatrix();
 	xRotPole->rotateX(90.*deg);
@@ -252,7 +273,7 @@ block26 =
 	block26vis = new G4VisAttributes(red);
 	block26_Logical->SetVisAttributes(block26vis);
 
-	new G4PVPlacement(0, G4ThreeVector(0, 0,0 ), block26_Logical, "block", world_log, 0, 0);
+	//new G4PVPlacement(0, G4ThreeVector(0, 0,0 ), block26_Logical, "block", world_log, 0, 0);
 //End Block 026---------------------------------------
 
 //Orientation Sphere
@@ -274,8 +295,8 @@ new G4Sphere("Sphere",
 	Spherevis = new G4VisAttributes(red);
 	Sphere_Logical->SetVisAttributes(Spherevis);
 
-	new G4PVPlacement(0, G4ThreeVector(0, 0,0 ), Sphere_Logical, 
-	"Sphere", world_log, 0, 0);
+	//new G4PVPlacement(0, G4ThreeVector(0, 0,0 ), Sphere_Logical, 
+	//"Sphere", world_log, 0, 0);
 
 
 /************************* Important Paramters*****************/
