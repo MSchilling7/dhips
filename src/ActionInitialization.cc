@@ -20,9 +20,9 @@ void ActionInitialization::Build() const {
 	output_flags[EDEP] = 0;
 	output_flags[PARTICLE] = 1;
 	output_flags[VOLUME] = 1;
-	output_flags[POSX] = 0;
-	output_flags[POSY] = 0;
-	output_flags[POSZ] = 0;
+	output_flags[POSX] = 1;
+	output_flags[POSY] = 1;
+	output_flags[POSZ] = 1;
 	output_flags[MOMX] = 0;
 	output_flags[MOMY] = 0;
 	output_flags[MOMZ] = 0;

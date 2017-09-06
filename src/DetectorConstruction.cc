@@ -63,14 +63,19 @@ G4VPhysicalVolume *DetectorConstruction::Construct() {
 	G4Colour leadcolor=green;
 
 	G4NistManager *man = G4NistManager::Instance();
-	//Materials *mat = new Materials();
+	Materials *mat = new Materials();
 
 	G4Material *Cu = man->FindOrBuildMaterial("G4_Cu");
 	G4Material *AIR= man->FindOrBuildMaterial("G4_AIR");
 	G4Material *VACUUM= man->FindOrBuildMaterial("G4_Galactic");
 	G4Material *Fe= man->FindOrBuildMaterial("G4_Fe");
+	G4double Fe_density = 7.874 * g / cm3; // From GEANT4 Material Database
 	G4Material *Pb= man->FindOrBuildMaterial("G4_Pb");
 	G4Material *Al= man->FindOrBuildMaterial("G4_Al");
+	G4double Al_density = 2.699 * g / cm3; // From GEANT4 Material Database
+	G4Material *Co = man->FindOrBuildMaterial("G4_Co");
+	G4double Co_density = 8.9 * g / cm3; // From GEANT4 Material Database
+	G4Material *PE = man->FindOrBuildMaterial("G4_POLYETHYLENE");
 
 	/************************* World volume *****************/
 
@@ -198,7 +203,7 @@ logical_volume_name << "block" << i << "_Logical";
 	G4double radiator_holder1_to_collimator = 150.*mm;
 	G4double radiator_holder2_to_collimator = 120.*mm;
 
-	G4double collimator_entrance_z = -distcollimatortotarget + trans_z - 11.*block_z;
+	//G4double collimator_entrance_z = -distcollimatortotarget + trans_z - 11.*block_z;
 
 	RadiatorTarget *radiatorTarget1 = new RadiatorTarget(0.5*mm, "Au", "Target_1", 0.*mm, "AIR");
 	G4LogicalVolume *radiator_Holder1_Logical = radiatorTarget1->Get_Logical();
@@ -304,7 +309,8 @@ new G4Sphere("Sphere",
 //Angles and Distances for Detector1
  Germanium1_TUD* germaniumDetector1=new Germanium1_TUD("Germanium1_TUD");
 
-  BGO* bgo1 = new BGO(); 
+	G4String bgo1_Name = "BGO1";
+  BGO* bgo1 = new BGO(bgo1_Name); 
 
   G4double g1_Distance = -(detectordistance1 + germaniumDetector1->Get_Length()*0.5 + bgo1->Get_Length()) + bgo1->Get_Max_Penetration_Depth();
   
@@ -322,7 +328,8 @@ new G4Sphere("Sphere",
 //Angles and Distances for Detector2
  Germanium2_TUD* germaniumDetector2=new Germanium2_TUD("Germanium2_TUD");
   
-    BGO* bgo2 = new BGO();
+ 	G4String bgo2_Name = "BGO2";
+    BGO* bgo2 = new BGO(bgo2_Name);
 
   //G4double g2_Distance = -(detectordistance2 + germaniumDetector2->Get_Length());
   G4double g2_Distance = -(detectordistance2 + germaniumDetector2->Get_Length()*0.5 + bgo2->Get_Length()) + bgo2->Get_Max_Penetration_Depth();
@@ -342,7 +349,8 @@ G4double leadfilter2_Distance = -(-18*cm+detectordistance1 + germaniumDetector1-
 //Angles and Distances for Polarimeter
   Polarimeter_TUD* polarimeterDetector=new Polarimeter_TUD("Polarimeter_TUD");
 
-BGO* bgop = new BGO();
+	G4String bgop_Name = "BGOP";
+BGO* bgop = new BGO(bgop_Name);
 
   G4double pol_Distance = -(poldistance + polarimeterDetector->Get_Length()*0.5 + bgop->Get_Length()) + bgop->Get_Max_Penetration_Depth();
   
@@ -1223,11 +1231,338 @@ G4VisAttributes *leadfilterpolvis;
   
   new G4PVPlacement(rmpol, leadfilterpol_Position, leadfilterpol_Logical, "leadfilterpol", world_log, false, 0);
 //End of Lead-Filter for Pol
-// /control/execute init_vis.mac
+
+	/************************* NRF Target *****************/
+
+  	// Distance of the NRF target in z-direction to the origin
+	G4double target_distance = 0. * mm;
+
+	G4double target_radius = 12. * mm;
+	G4double target_area = pi * target_radius * target_radius;
+
+	// Masses of target constituents, measured by M. Schilling, M. Zweidinger
+	// (and P. Ries ?)
+	// Neglected the UV hardened glue
+	G4double Fe1_mass = 0.4948 * g;
+	G4double Co1_mass = 0.5153 * g;
+	G4double Al1_mass = 0.610 * g;
+	G4double Al2_mass = 0.6074 * g;
+	G4double Cr2O3_1_mass = 0.9574 * g; // "Kleber II" is missing here
+	G4double Sn_mass = 9.1516 * g;
+	G4double Cr2O3_2_mass = 0.9372 * g; // Subtracted "Dose (ohne Deckel) + ...
+	                                    // + 116Sn" from "Dose (ohne Deckel) +
+	                                    // ... + 52Cr2O3II"
+	G4double Al3_mass = 0.6113 * g;
+	G4double Al4_mass = 0.6111 * g;
+	G4double Fe2_mass = 0.5790 * g;
+	G4double Co2_mass = 0.5392 * g;
+
+	// Calculate length of cylindric target constituents from their known mass,
+	// density and radius
+	G4double Fe1_thickness = Fe1_mass / Fe_density / target_area;
+	G4double Co1_thickness = Co1_mass / Co_density / target_area;
+	G4double Al1_thickness = Al1_mass / Al_density / target_area;
+	G4double Al2_thickness = Al2_mass / Al_density / target_area;
+	G4double Cr2O3_1_thickness =
+	    Cr2O3_1_mass / mat->Get_Cr2O3_density() / target_area;
+	G4double Sn_thickness = Sn_mass / mat->Get_Sn_density() / target_area;
+	G4double Cr2O3_2_thickness =
+	    Cr2O3_2_mass / mat->Get_Cr2O3_density() / target_area;
+	G4double Al3_thickness = Al3_mass / Al_density / target_area;
+	G4double Al4_thickness = Al4_mass / Al_density / target_area;
+	G4double Fe2_thickness = Fe2_mass / Fe_density / target_area;
+	G4double Co2_thickness = Co2_mass / Co_density / target_area;
+
+	// Dimensions of the target container. Calculate its length from the length
+	// of all targets
+	G4double TargetContainerCap_Thickness = 2. * mm;  // Estimated
+	G4double TargetContainerWall_Thickness = 1. * mm; // Estimated
+	G4double TargetContainerWall_Length =
+	    Fe1_thickness + Co1_thickness + Al1_thickness + Al2_thickness +
+	    Cr2O3_1_thickness + Sn_thickness + Cr2O3_2_thickness + Al3_thickness +
+	    Al4_thickness + Co2_thickness + Fe2_thickness;
+
+	G4Tubs *TargetContainerCap1_Solid =
+	    new G4Tubs("TargetContainerCap1_Solid", 0. * mm,
+	               target_radius + TargetContainerWall_Thickness,
+	               TargetContainerCap_Thickness * 0.5, 0., twopi);
+	G4LogicalVolume *TargetContainerCap1_Logical = new G4LogicalVolume(
+	    TargetContainerCap1_Solid, PE, "TargetContainerCap1_Logical");
+	G4VisAttributes *TargetContainerCap1_vis = new G4VisAttributes(cyan);
+	TargetContainerCap1_Logical->SetVisAttributes(TargetContainerCap1_vis);
+	new G4PVPlacement(
+	    0, G4ThreeVector(0., 0., target_distance +
+	                                 0.5 * TargetContainerCap_Thickness),
+	    TargetContainerCap1_Logical, "TargetContainerCap1", world_log, 0, 0);
+
+	G4Tubs *TargetContainerWall_Solid =
+	    new G4Tubs("TargetContainerWall_Solid", target_radius,
+	               target_radius + TargetContainerWall_Thickness,
+	               TargetContainerWall_Length * 0.5, 0., twopi);
+	G4LogicalVolume *TargetContainerWall_Logical = new G4LogicalVolume(
+	    TargetContainerWall_Solid, PE, "TargetContainerWall_Logical");
+	G4VisAttributes *TargetContainerWall_vis = new G4VisAttributes(cyan);
+	TargetContainerWall_Logical->SetVisAttributes(TargetContainerWall_vis);
+//	new G4PVPlacement(
+//	    0, G4ThreeVector(0., 0.,  target_distance +
+//	                                 TargetContainerCap_Thickness +
+//	                                 0.5 * TargetContainerWall_Length),
+//	    TargetContainerWall_Logical, "TargetContainerWall", world_log, 0, 0);
+
+	// Place all the target material inside the TargetContainerWall to avoid
+	// overlaps
+	G4Tubs *Fe1_Solid = new G4Tubs("Fe1_Solid", 0. * mm, target_radius,
+	                               Fe1_thickness * 0.5, 0., twopi);
+	G4LogicalVolume *Fe1_Logical =
+	    new G4LogicalVolume(Fe1_Solid, Fe, "Fe1_Logical");
+	G4VisAttributes *Fe1_vis = new G4VisAttributes(red);
+	Fe1_Logical->SetVisAttributes(Fe1_vis);
+	new G4PVPlacement(
+	    0, G4ThreeVector(0., 0., target_distance +
+	                                 TargetContainerCap_Thickness +
+	                                 Fe1_thickness * 0.5),
+	    Fe1_Logical, "Fe1", world_log, 0, 0);
+
+	G4Tubs *Co1_Solid = new G4Tubs("Co1_Solid", 0. * mm, target_radius,
+	                               Co1_thickness * 0.5, 0., twopi);
+	G4LogicalVolume *Co1_Logical =
+	    new G4LogicalVolume(Co1_Solid, Co, "Co1_Logical");
+	G4VisAttributes *Co1_vis = new G4VisAttributes(white);
+	Co1_Logical->SetVisAttributes(Co1_vis);
+	new G4PVPlacement(
+	    0, G4ThreeVector(0., 0., target_distance +
+	                                 TargetContainerCap_Thickness +
+	                                 Fe1_thickness + 0.5 * Co1_thickness),
+	    Co1_Logical, "Co1", world_log, 0, 0);
+
+	G4Tubs *Al1_Solid = new G4Tubs("Al1_Solid", 0. * mm, target_radius,
+	                               Al1_thickness * 0.5, 0., twopi);
+	G4LogicalVolume *Al1_Logical =
+	    new G4LogicalVolume(Al1_Solid, Al, "Al1_Logical");
+	G4VisAttributes *Al1_vis = new G4VisAttributes(grey);
+	Al1_Logical->SetVisAttributes(Al1_vis);
+	new G4PVPlacement(
+	    0,
+	    G4ThreeVector(0., 0., target_distance +
+	                              TargetContainerCap_Thickness + Co1_thickness +
+	                              Fe1_thickness + 0.5 * Al1_thickness),
+	    Al1_Logical, "Al1", world_log, 0, 0);
+
+	G4Tubs *Al2_Solid = new G4Tubs("Al2_Solid", 0. * mm, target_radius,
+	                               Al2_thickness * 0.5, 0., twopi);
+	G4LogicalVolume *Al2_Logical =
+	    new G4LogicalVolume(Al2_Solid, Al, "Al2_Logical");
+	G4VisAttributes *Al2_vis = new G4VisAttributes(grey);
+	Al2_Logical->SetVisAttributes(Al2_vis);
+	new G4PVPlacement(
+	    0, G4ThreeVector(0., 0., target_distance +
+	                                 TargetContainerCap_Thickness +
+	                                 Al1_thickness + Co1_thickness +
+	                                 Fe1_thickness + 0.5 * Al2_thickness),
+	    Al2_Logical, "Al2", world_log, 0, 0);
+
+	G4Tubs *Cr2O3_1_Solid = new G4Tubs("Cr2O3_1_Solid", 0. * mm, target_radius,
+	                                   Cr2O3_1_thickness * 0.5, 0., twopi);
+	G4LogicalVolume *Cr2O3_1_Logical = new G4LogicalVolume(
+	    Cr2O3_1_Solid, mat->Get_target_Cr2O3(), "Cr2O3_1_Logical");
+	G4VisAttributes *Cr2O3_1_vis = new G4VisAttributes(green);
+	Cr2O3_1_Logical->SetVisAttributes(Cr2O3_1_vis);
+	new G4PVPlacement(
+	    0,
+	    G4ThreeVector(0., 0., target_distance +
+	                              TargetContainerCap_Thickness + Al1_thickness +
+	                              Co1_thickness + Fe1_thickness +
+	                              Al2_thickness + 0.5 * Cr2O3_1_thickness),
+	    Cr2O3_1_Logical, "Cr2O3_1", world_log, 0, 0);
+
+	G4Tubs *Sn_Solid = new G4Tubs("Sn_Solid", 0. * mm, target_radius,
+	                              Sn_thickness * 0.5, 0., twopi);
+	G4LogicalVolume *Sn_Logical =
+	    new G4LogicalVolume(Sn_Solid, mat->Get_target_Sn(), "Sn_Logical");
+	G4VisAttributes *Sn_vis = new G4VisAttributes(yellow);
+	Sn_Logical->SetVisAttributes(Sn_vis);
+	new G4PVPlacement(
+	    0, G4ThreeVector(0., 0., target_distance +
+	                                 TargetContainerCap_Thickness +
+	                                 Al1_thickness + Co1_thickness +
+	                                 Fe1_thickness + Al2_thickness +
+	                                 Cr2O3_1_thickness + 0.5 * Sn_thickness),
+	    Sn_Logical, "Sn", world_log, 0, 0);
+
+	G4Tubs *Cr2O3_2_Solid = new G4Tubs("Cr2O3_2_Solid", 0. * mm, target_radius,
+	                                   Cr2O3_2_thickness * 0.5, 0., twopi);
+	G4LogicalVolume *Cr2O3_2_Logical = new G4LogicalVolume(
+	    Cr2O3_2_Solid, mat->Get_target_Cr2O3(), "Cr2O3_2_Logical");
+	G4VisAttributes *Cr2O3_2_vis = new G4VisAttributes(green);
+	Cr2O3_2_Logical->SetVisAttributes(Cr2O3_2_vis);
+	new G4PVPlacement(
+	    0,
+	    G4ThreeVector(0., 0., target_distance +
+	                              TargetContainerCap_Thickness + Al1_thickness +
+	                              Co1_thickness + Fe1_thickness +
+	                              Al2_thickness + Cr2O3_1_thickness +
+	                              Sn_thickness + 0.5 * Cr2O3_2_thickness),
+	    Cr2O3_2_Logical, "Cr2O3_2", world_log, 0, 0);
+
+	G4Tubs *Al3_Solid = new G4Tubs("Al3_Solid", 0. * mm, target_radius,
+	                               Al3_thickness * 0.5, 0., twopi);
+	G4LogicalVolume *Al3_Logical =
+	    new G4LogicalVolume(Al3_Solid, Al, "Al3_Logical");
+	G4VisAttributes *Al3_vis = new G4VisAttributes(grey);
+	Al3_Logical->SetVisAttributes(Al3_vis);
+	new G4PVPlacement(
+	    0, G4ThreeVector(0., 0.,target_distance +
+	                                 TargetContainerCap_Thickness +
+	                                 Al1_thickness + Co1_thickness +
+	                                 Fe1_thickness + Al2_thickness +
+	                                 Cr2O3_1_thickness + Sn_thickness +
+	                                 Cr2O3_2_thickness + 0.5 * Al3_thickness),
+	    Al3_Logical, "Al3", world_log, 0, 0);
+
+	G4Tubs *Al4_Solid = new G4Tubs("Al4_Solid", 0. * mm, target_radius,
+	                               Al4_thickness * 0.5, 0., twopi);
+	G4LogicalVolume *Al4_Logical =
+	    new G4LogicalVolume(Al4_Solid, Al, "Al4_Logical");
+	G4VisAttributes *Al4_vis = new G4VisAttributes(grey);
+	Al4_Logical->SetVisAttributes(Al4_vis);
+	new G4PVPlacement(
+	    0,
+	    G4ThreeVector(0., 0., target_distance +
+	                              TargetContainerCap_Thickness + Al1_thickness +
+	                              Co1_thickness + Fe1_thickness +
+	                              Al2_thickness + Cr2O3_1_thickness +
+	                              Sn_thickness + Cr2O3_2_thickness +
+	                              Al3_thickness + 0.5 * Al4_thickness),
+	    Al4_Logical, "Al4", world_log, 0, 0);
+
+	G4Tubs *Co2_Solid = new G4Tubs("Co2_Solid", 0. * mm, target_radius,
+	                               Co2_thickness * 0.5, 0., twopi);
+	G4LogicalVolume *Co2_Logical =
+	    new G4LogicalVolume(Co2_Solid, Co, "Co2_Logical");
+	G4VisAttributes *Co2_vis = new G4VisAttributes(white);
+	Co2_Logical->SetVisAttributes(Co2_vis);
+	new G4PVPlacement(
+	    0,
+	    G4ThreeVector(0., 0.,
+	                  target_distance +
+	                      TargetContainerCap_Thickness + Al1_thickness +
+	                      Co1_thickness + Fe1_thickness + Al2_thickness +
+	                      Cr2O3_1_thickness + Sn_thickness + Cr2O3_2_thickness +
+	                      Al3_thickness + Al4_thickness + 0.5 * Co2_thickness),
+	    Co2_Logical, "Co2", world_log, 0, 0);
+
+	G4Tubs *Fe2_Solid = new G4Tubs("Fe2_Solid", 0. * mm, target_radius,
+	                               Fe2_thickness * 0.5, 0., twopi);
+	G4LogicalVolume *Fe2_Logical =
+	    new G4LogicalVolume(Fe2_Solid, Fe, "Fe2_Logical");
+	G4VisAttributes *Fe2_vis = new G4VisAttributes(red);
+	Fe2_Logical->SetVisAttributes(Fe2_vis);
+	new G4PVPlacement(
+	    0, G4ThreeVector(0., 0.,
+	                     target_distance +
+	                         TargetContainerCap_Thickness + Al1_thickness +
+	                         Co1_thickness + Fe1_thickness + Al2_thickness +
+	                         Cr2O3_1_thickness + Sn_thickness +
+	                         Cr2O3_2_thickness + Al3_thickness + Al4_thickness +
+	                         Co2_thickness + 0.5 * Fe2_thickness),
+	    Fe2_Logical, "Fe2", world_log, 0, 0);
+
+	G4Tubs *TargetContainerCap2_Solid =
+	    new G4Tubs("TargetContainerCap2_Solid", 0. * mm,
+	               target_radius + TargetContainerWall_Thickness,
+	               TargetContainerCap_Thickness * 0.5, 0., twopi);
+	G4LogicalVolume *TargetContainerCap2_Logical = new G4LogicalVolume(
+	    TargetContainerCap2_Solid, PE, "TargetContainerCap2_Logical");
+	G4VisAttributes *TargetContainerCap2_vis = new G4VisAttributes(cyan);
+	TargetContainerCap2_Logical->SetVisAttributes(TargetContainerCap2_vis);
+	new G4PVPlacement(
+	    0, G4ThreeVector(0., 0., target_distance +
+	                                 1.5 * TargetContainerCap_Thickness +
+	                                 TargetContainerWall_Length),
+	    TargetContainerCap2_Logical, "TargetContainerCap2", world_log, 0, 0);
 
 	return world_phys;
 }
 
 void DetectorConstruction::ConstructSDandField() {
 
+	// Detector 1
+//	ParticleSD *germanium1_SD = new ParticleSD("germanium1_SD", "germanium1_Hits");
+//	germanium1_SD->SetDetectorID(1);
+//	SetSensitiveDetector("Germanium1_TUD", germanium1_SD, true);
+
+	// BGO 1 (4 parts)
+//	ParticleSD *bgo1_1_SD = new ParticleSD("bgo1_1_SD", "bgo1_1_Hits");
+//	bgo1_1_SD->SetDetectorID(11);
+//	SetSensitiveDetector("BGO1_1", bgo1_1_SD, true);
+//
+//	ParticleSD *bgo1_2_SD = new ParticleSD("bgo1_2_SD", "bgo1_2_Hits");
+//	bgo1_2_SD->SetDetectorID(12);
+//	SetSensitiveDetector("BGO1_2", bgo1_2_SD, true);
+//
+//	ParticleSD *bgo1_3_SD = new ParticleSD("bgo1_3_SD", "bgo1_3_Hits");
+//	bgo1_3_SD->SetDetectorID(13);
+//	SetSensitiveDetector("BGO1_3", bgo1_3_SD, true);
+//
+//	ParticleSD *bgo1_4_SD = new ParticleSD("bgo1_4_SD", "bgo1_4_Hits");
+//	bgo1_4_SD->SetDetectorID(14);
+//	SetSensitiveDetector("BGO1_4", bgo1_4_SD, true);
+	
+	// Detector 2
+//	ParticleSD *germanium2_SD = new ParticleSD("germanium2_SD", "germanium2_Hits");
+//	germanium2_SD->SetDetectorID(2);
+//	SetSensitiveDetector("Germanium2_TUD", germanium2_SD, true);
+
+	// BGO 2 (4 parts)
+//	ParticleSD *bgo2_1_SD = new ParticleSD("bgo2_1_SD", "bgo2_1_Hits");
+//	bgo2_1_SD->SetDetectorID(21);
+//	SetSensitiveDetector("BGO2_1", bgo2_1_SD, true);
+//
+//	ParticleSD *bgo2_2_SD = new ParticleSD("bgo2_2_SD", "bgo2_2_Hits");
+//	bgo2_2_SD->SetDetectorID(22);
+//	SetSensitiveDetector("BGO2_2", bgo2_2_SD, true);
+//
+//	ParticleSD *bgo2_3_SD = new ParticleSD("bgo2_3_SD", "bgo2_3_Hits");
+//	bgo2_3_SD->SetDetectorID(23);
+//	SetSensitiveDetector("BGO2_3", bgo2_3_SD, true);
+//
+//	ParticleSD *bgo2_4_SD = new ParticleSD("bgo2_4_SD", "bgo2_4_Hits");
+//	bgo2_4_SD->SetDetectorID(24);
+//	SetSensitiveDetector("BGO2_4", bgo2_4_SD, true);
+	
+	// Polarimeter
+//	ParticleSD *polarimeter_SD = new ParticleSD("polarimeter_SD", "polarimeter_Hits");
+//	polarimeter_SD->SetDetectorID(3);
+//	SetSensitiveDetector("Polarimeter_TUD", polarimeter_SD, true);
+
+	// BGO Polarimeter (4 parts)
+//	ParticleSD *bgop_1_SD = new ParticleSD("bgop_1_SD", "bgop_1_Hits");
+//	bgop_1_SD->SetDetectorID(31);
+//	SetSensitiveDetector("BGOP_1", bgop_1_SD, true);
+//
+//	ParticleSD *bgop_2_SD = new ParticleSD("bgop_2_SD", "bgop_2_Hits");
+//	bgop_2_SD->SetDetectorID(32);
+//	SetSensitiveDetector("BGOP_2", bgop_2_SD, true);
+//
+//	ParticleSD *bgop_3_SD = new ParticleSD("bgop_3_SD", "bgop_3_Hits");
+//	bgop_3_SD->SetDetectorID(33);
+//	SetSensitiveDetector("BGOP_3", bgop_3_SD, true);
+//
+//	ParticleSD *bgop_4_SD = new ParticleSD("bgop_4_SD", "bgop_4_Hits");
+//	bgop_4_SD->SetDetectorID(34);
+//	SetSensitiveDetector("BGOP_4", bgop_4_SD, true);
+
+	// Target container lid which is first hit by the beam 
+	ParticleSD *targetContainer_SD = new ParticleSD("targetContainer_SD", "targetContainer_Hits");
+	targetContainer_SD->SetDetectorID(0);
+	SetSensitiveDetector("TargetContainerCap1_Logical", targetContainer_SD, true);
+
+	// Radiator targets
+//	ParticleSD *radiatorTarget1_SD = new ParticleSD("radiatorTarget1_SD", "radiatorTarget1_Hits");
+//	radiatorTarget1_SD->SetDetectorID(4);
+//	SetSensitiveDetector("Target_1", radiatorTarget1_SD, true);
+//
+//	ParticleSD *radiatorTarget2_SD = new ParticleSD("radiatorTarget2_SD", "radiatorTarget2_Hits");
+//	radiatorTarget2_SD->SetDetectorID(5);
+//	SetSensitiveDetector("Target_2", radiatorTarget2_SD, true);
 }

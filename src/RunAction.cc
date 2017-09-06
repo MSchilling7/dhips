@@ -23,7 +23,7 @@ void RunAction::BeginOfRunAction(const G4Run *) {
 	G4AnalysisManager *analysisManager = G4AnalysisManager::Instance();
 
 	G4cout << "Creating TTree" << G4endl;
-	analysisManager->CreateNtuple("brems", "Particle information");
+	analysisManager->CreateNtuple("dhips", "Particle information");
 	if (output_flags[EKIN])
 		analysisManager->CreateNtupleDColumn("ekin");
 	if (output_flags[EDEP])
@@ -56,7 +56,7 @@ void RunAction::BeginOfRunAction(const G4Run *) {
 	G4FileUtilities *fu = new G4FileUtilities();
 	std::stringstream sstr;
 	std::stringstream sstr2;
-	G4String fileNamePrefix = "brems";
+	G4String fileNamePrefix = "dhips";
 
 	G4int threadId = G4Threading::G4GetThreadId();
 

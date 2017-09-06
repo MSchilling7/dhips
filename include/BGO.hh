@@ -7,11 +7,10 @@
 class BGO
 {
 public:
-  BGO();
+  BGO(G4String name);
   ~BGO();
 
   G4LogicalVolume* Get_Logical() { return bgo_Mother_Logical; }
-  //G4LogicalVolume* Get_Crystal_Logical() { return bgo_Crystal_Logical; }
   G4UnionSolid* Get_Al_Case_Solid() { return al_Case_Solid; };
 
   // Length and radius of the BGO mother volume which just encloses all of the parts of the BGO
@@ -24,7 +23,8 @@ public:
 private:
   G4LogicalVolume* bgo_Mother_Logical;
   G4UnionSolid* al_Case_Solid;
-  //G4LogicalVolume* bgo_Crystal_Logical;
+
+  G4String bgo_Name;
 
   G4double bgo_Mother_Length;
   G4double bgo_Mother_Radius;

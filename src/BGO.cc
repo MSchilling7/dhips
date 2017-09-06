@@ -17,7 +17,13 @@
 #include "G4NistManager.hh"
 #include "G4VisAttributes.hh"
 
-BGO::BGO(){
+#include <sstream>
+
+using std::stringstream;
+
+BGO::BGO(G4String name){
+
+	bgo_Name = name;
 
 	G4Colour  white   (1.0, 1.0, 1.0) ;
 	G4Colour  grey    (0.5, 0.5, 0.5) ;
@@ -160,7 +166,7 @@ G4double	al_Case7_Rmax2 = al_Case6_Rmin2 + 7.*mm;
 	// Part 1
 	
 G4double	al_SolidCase1_Length = 8.*mm;
-G4double	al_SolidCase1_inner_angle = 16.5*deg;
+//G4double	al_SolidCase1_inner_angle = 16.5*deg;
 G4double	al_SolidCase1_outer_angle = 21.*deg;
 G4double	al_SolidCase1_Rmin1 = 0.*mm;
 G4double	al_SolidCase1_Rmax1 = 62.*mm;
@@ -172,7 +178,7 @@ G4double	al_SolidCase1_Rmax2 = al_SolidCase1_Rmax1 + al_SolidCase1_Length*tan(al
 	// Part 2
 	
 G4double	al_SolidCase2_Length = 78.*mm;
-G4double	al_SolidCase2_inner_angle = 21.*deg;
+//G4double	al_SolidCase2_inner_angle = 21.*deg;
 G4double	al_SolidCase2_outer_angle = 21.*deg;
 G4double	al_SolidCase2_Rmin1 = 0.*mm;
 G4double	al_SolidCase2_Rmax1 = al_Case1_Rmax2;
@@ -204,8 +210,8 @@ G4double	al_SolidCase3_Rmax2 = al_SolidCase3_Rmax1;
 	// Part 1
 	
 G4double	bgo_Crystal1_Length = 30.*mm;
-G4double	bgo_Crystal1_inner_angle = al_Case1_inner_angle;
-G4double	bgo_Crystal1_outer_angle = al_Case1_outer_angle;
+//G4double	bgo_Crystal1_inner_angle = al_Case1_inner_angle;
+//G4double	bgo_Crystal1_outer_angle = al_Case1_outer_angle;
 G4double	bgo_Crystal1_Rmin1 = al_Case1_Rmin1 + (al_Case1_Length + 2.*mm)*tan(al_Case1_inner_angle);
 G4double	bgo_Crystal1_Rmax1 = al_Case1_Rmax2 - (3.*mm + 2.*mm)*tan(al_Case1_outer_angle);
 
@@ -213,7 +219,11 @@ G4double	bgo_Crystal1_Rmin2 = al_Case1_Rmin1 + (al_Case1_Length + 2.*mm + bgo_Cr
 G4double	bgo_Crystal1_Rmax2 = al_Case1_Rmax2 - (3.*mm + 2.*mm)*tan(al_Case1_outer_angle) + bgo_Crystal1_Length*tan(al_Case1_outer_angle);
 
 	G4Cons* bgo_Crystal1_Solid = new G4Cons("bgo_Crystal1_Solid", bgo_Crystal1_Rmin1, bgo_Crystal1_Rmax1, bgo_Crystal1_Rmin2, bgo_Crystal1_Rmax2, bgo_Crystal1_Length*0.5, 0.*deg, 360.*deg);
-	G4LogicalVolume* bgo_Crystal1_Logical = new G4LogicalVolume(bgo_Crystal1_Solid, bgo, "bgo_Crystal1_Logical");
+
+	stringstream logicalVolume_name;
+	logicalVolume_name << bgo_Name << "_1";
+
+	G4LogicalVolume* bgo_Crystal1_Logical = new G4LogicalVolume(bgo_Crystal1_Solid, bgo, logicalVolume_name.str());
 	new G4PVPlacement(rot, G4ThreeVector(0., 0., bgo_Mother_Length*0.5 - al_Case1_Length - 2.*mm - bgo_Crystal1_Length*0.5), bgo_Crystal1_Logical, "bgo_Crystal1", bgo_Mother_Logical, false, 0);
 
 	bgo_Crystal1_Logical->SetVisAttributes(blue);
@@ -221,7 +231,7 @@ G4double	bgo_Crystal1_Rmax2 = al_Case1_Rmax2 - (3.*mm + 2.*mm)*tan(al_Case1_oute
 	// Part 2
 	
 G4double	bgo_Crystal2_Length = 30.*mm;
-G4double	bgo_Crystal2_outer_angle = al_Case1_outer_angle;
+//G4double	bgo_Crystal2_outer_angle = al_Case1_outer_angle;
 G4double	bgo_Crystal2_Rmin1 = 52.3*mm;
 G4double	bgo_Crystal2_Rmax1 = bgo_Crystal1_Rmax2;
 
@@ -229,7 +239,12 @@ G4double	bgo_Crystal2_Rmin2 = bgo_Crystal2_Rmin1;
 G4double	bgo_Crystal2_Rmax2 = bgo_Crystal2_Rmax1 + bgo_Crystal2_Length*tan(al_Case1_outer_angle);
 
 	G4Cons* bgo_Crystal2_Solid = new G4Cons("bgo_Crystal2_Solid", bgo_Crystal2_Rmin1, bgo_Crystal2_Rmax1, bgo_Crystal2_Rmin2, bgo_Crystal2_Rmax2, bgo_Crystal2_Length*0.5, 0.*deg, 360.*deg);
-	G4LogicalVolume* bgo_Crystal2_Logical = new G4LogicalVolume(bgo_Crystal2_Solid, bgo, "bgo_Crystal2_Logical");
+
+	logicalVolume_name.str("");
+	logicalVolume_name.clear();
+	logicalVolume_name << bgo_Name << "_2";
+
+	G4LogicalVolume* bgo_Crystal2_Logical = new G4LogicalVolume(bgo_Crystal2_Solid, bgo, logicalVolume_name.str());
 	new G4PVPlacement(rot, G4ThreeVector(0., 0., bgo_Mother_Length*0.5 - al_Case1_Length - 2.*mm - bgo_Crystal1_Length - bgo_Crystal2_Length*0.5), bgo_Crystal2_Logical, "bgo_Crystal2", bgo_Mother_Logical, false, 0);
 
 	bgo_Crystal2_Logical->SetVisAttributes(blue);
@@ -244,7 +259,12 @@ G4double	bgo_Crystal3_Rmin2 = bgo_Crystal3_Rmin1;
 G4double	bgo_Crystal3_Rmax2 = bgo_Crystal3_Rmax1;
 
 	G4Cons* bgo_Crystal3_Solid = new G4Cons("bgo_Crystal3_Solid", bgo_Crystal3_Rmin1, bgo_Crystal3_Rmax1, bgo_Crystal3_Rmin2, bgo_Crystal3_Rmax2, bgo_Crystal3_Length*0.5, 0.*deg, 360.*deg);
-	G4LogicalVolume* bgo_Crystal3_Logical = new G4LogicalVolume(bgo_Crystal3_Solid, bgo, "bgo_Crystal3_Logical");
+
+	logicalVolume_name.str("");
+	logicalVolume_name.clear();
+	logicalVolume_name << bgo_Name << "_3";
+
+	G4LogicalVolume* bgo_Crystal3_Logical = new G4LogicalVolume(bgo_Crystal3_Solid, bgo, logicalVolume_name.str());
 	new G4PVPlacement(rot, G4ThreeVector(0., 0., bgo_Mother_Length*0.5 - al_Case1_Length - 2.*mm - bgo_Crystal1_Length - bgo_Crystal2_Length - bgo_Crystal3_Length*0.5), bgo_Crystal3_Logical, "bgo_Crystal3", bgo_Mother_Logical, false, 0);
 
 	bgo_Crystal3_Logical->SetVisAttributes(blue);
@@ -259,7 +279,12 @@ G4double	bgo_Crystal4_Rmin2 = bgo_Crystal4_Rmin1;
 G4double	bgo_Crystal4_Rmax2 = bgo_Crystal4_Rmin1;
 
 	G4Cons* bgo_Crystal4_Solid = new G4Cons("bgo_Crystal4_Solid", bgo_Crystal4_Rmin1, bgo_Crystal4_Rmax1, bgo_Crystal4_Rmin2, bgo_Crystal4_Rmax2, bgo_Crystal4_Length*0.5, 0.*deg, 360.*deg);
-	G4LogicalVolume* bgo_Crystal4_Logical = new G4LogicalVolume(bgo_Crystal4_Solid, bgo, "bgo_Crystal4_Logical");
+
+	logicalVolume_name.str("");
+	logicalVolume_name.clear();
+	logicalVolume_name << bgo_Name << "_4";
+
+	G4LogicalVolume* bgo_Crystal4_Logical = new G4LogicalVolume(bgo_Crystal4_Solid, bgo, logicalVolume_name.str());
 	new G4PVPlacement(rot, G4ThreeVector(0., 0., bgo_Mother_Length*0.5 - al_Case1_Length - 2.*mm - bgo_Crystal1_Length - bgo_Crystal2_Length - bgo_Crystal3_Length - bgo_Crystal4_Length*0.5), bgo_Crystal4_Logical, "bgo_Crystal4", bgo_Mother_Logical, false, 0);
 
 	bgo_Crystal4_Logical->SetVisAttributes(blue);
@@ -272,8 +297,8 @@ G4double	bgo_Crystal4_Rmax2 = bgo_Crystal4_Rmin1;
 	// Part 1
 	
 G4double	al_Inner_Case1_Length = 43.*mm;
-G4double	al_Inner_Case1_inner_angle = al_Case1_inner_angle;
-G4double	al_Inner_Case1_outer_angle = al_Case1_outer_angle;
+//G4double	al_Inner_Case1_inner_angle = al_Case1_inner_angle;
+//G4double	al_Inner_Case1_outer_angle = al_Case1_outer_angle;
 G4double	al_Inner_Case1_Rmin1 = al_Case1_Rmin1 - 1.*mm*tan(al_Case1_inner_angle);
 G4double	al_Inner_Case1_Rmax1 = al_Case1_Rmin1;
 
