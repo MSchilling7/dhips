@@ -115,6 +115,11 @@ Germanium1_TUD::Germanium1_TUD(G4String Detector_Name) {
 	new G4PVPlacement(
 	    0, G4ThreeVector(0., 0., -(crystal_Length / 2 - coldfinger_Length / 2)),
 	    coldfinger_Logical, "Coldfinger1", crystal1_Logical, false, 0);
+	    
+	    
+	    
+	    
+	 
 }
 
 Germanium1_TUD::~Germanium1_TUD() {}

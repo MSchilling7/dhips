@@ -226,6 +226,7 @@ new G4Sphere("Sphere",
   G4ThreeVector bgo1_Position = G4ThreeVector
   (bgo1_Distance*sin(g1_theta)*cos(g1_phi), bgo1_Distance*cos(g1_theta), bgo1_Distance*sin(g1_theta)*sin(g1_phi));
   
+  G4double copperfilter1_Distance = -(-22*cm+detectordistance1 + germaniumDetector1->Get_Length());
 //Angles and Distances for Detector2
  Germanium2_TUD* germaniumDetector2=new Germanium2_TUD("Germanium2_TUD");
   
@@ -240,6 +241,10 @@ new G4Sphere("Sphere",
   G4double bgo2_Distance = -(detectordistance2 + bgo2->Get_Length()/2);
   G4ThreeVector bgo2_Position = G4ThreeVector
   (bgo2_Distance*sin(g2_theta)*cos(g2_phi), bgo2_Distance*cos(g2_theta), bgo2_Distance*sin(g2_theta)*sin(g2_phi));
+
+
+
+G4double copperfilter2_Distance = -(-22*cm+detectordistance1 + germaniumDetector1->Get_Length());
 //Angles and Distances for Polarimeter
   Polarimeter_TUD* polarimeterDetector=new Polarimeter_TUD("Polarimeter_TUD");
 
@@ -254,6 +259,9 @@ BGO* bgop = new BGO();
   G4double bgop_Distance = -(poldistance + bgop->Get_Length()/2);
   G4ThreeVector bgop_Position = G4ThreeVector
   (bgop_Distance*sin(pol_theta)*cos(pol_phi), bgop_Distance*cos(pol_theta), bgop_Distance*sin(pol_theta)*sin(pol_phi));
+
+
+G4double copperfilterpol_Distance = -(-22*cm+detectordistance1 + germaniumDetector1->Get_Length());
 
 /************************* Iron Shielding *****************/
 // Iron Shielding around the Copper Collimator
@@ -591,15 +599,15 @@ G4Box *block74;
 G4VisAttributes *block74vis;
 
 block74 =
-	    new G4Box("block74",30*cm,25*cm, 9.5*cm); 
+	    new G4Box("block74",53/2*cm+0.5*cm,25*cm, 9.5*cm); 
 
   block74_Logical =
 	    new G4LogicalVolume(block74, Pb, "block74_Logical", 0, 0, 0);
 	block74vis = new G4VisAttributes(leadcolor);
 	block74_Logical->SetVisAttributes(block74vis);
 	
-		new G4PVPlacement(0, G4ThreeVector(155*cm-130*cm+trans_x ,trans_y, 181*cm-distcollimatortotarget-
-	95*cm-9.5*cm+trans_z), block74_Logical, "block", world_log, 0, 0);
+		new G4PVPlacement(0, G4ThreeVector(14*cm+trans_x ,trans_y, 41.5*cm-distcollimatortotarget
++trans_z), block74_Logical, "block", world_log, 0, 0);
 //End Block 74---------------------------------------
 
 
@@ -616,9 +624,9 @@ G4VisAttributes *block75vis;
 G4UnionSolid* blocksum_751_752;
 G4GenericTrap* itsatrap;
 block751 =
-	    new G4Box("block751",5.*cm,40*cm, (14.55/2)*cm); 
+	    new G4Box("block751",5.*cm,25*cm, (14.55/2)*cm+3*cm); 
 block752 =
-	    new G4Box("block752",14.*cm,40*cm, 15.6*cm); //1mm Overlap between the blocks
+	    new G4Box("block752",14.*cm,25*cm, 15.6*cm); //1mm Overlap between the blocks
 	    
 blocksum_751_752= new G4UnionSolid("blocksum_751_752", block751, block752,0, G4ThreeVector
 (9*cm, 0.,-(14.55/2)*cm+15.5*cm+36*cm-0.1*cm));
@@ -626,14 +634,14 @@ blocksum_751_752= new G4UnionSolid("blocksum_751_752", block751, block752,0, G4T
 
 vector <G4TwoVector> vertices1;
 
-vertices1.push_back (G4TwoVector(5.*cm,40*cm));
-vertices1.push_back (G4TwoVector(5.*cm,-40*cm));
-vertices1.push_back (G4TwoVector(-5.*cm,-40*cm));
-vertices1.push_back (G4TwoVector(-5.*cm,40*cm));
-vertices1.push_back (G4TwoVector(23.*cm,40*cm));
-vertices1.push_back (G4TwoVector(23.*cm,-40*cm));
-vertices1.push_back (G4TwoVector(-5.*cm,-40*cm));
-vertices1.push_back (G4TwoVector(-5.*cm,40*cm));
+vertices1.push_back (G4TwoVector(5.*cm,25*cm));
+vertices1.push_back (G4TwoVector(5.*cm,-25*cm));
+vertices1.push_back (G4TwoVector(-5.*cm,-25*cm));
+vertices1.push_back (G4TwoVector(-5.*cm,25*cm));
+vertices1.push_back (G4TwoVector(23.*cm,25*cm));
+vertices1.push_back (G4TwoVector(23.*cm,-25*cm));
+vertices1.push_back (G4TwoVector(-5.*cm,-25*cm));
+vertices1.push_back (G4TwoVector(-5.*cm,25*cm));
 
 
 itsatrap = new G4GenericTrap("itsatrap",   (21.55/2)*cm,
@@ -758,18 +766,18 @@ G4Box *block81;
 G4VisAttributes *block81vis;
 
 block81 =
-	    new G4Box("block81",160*cm,100*cm,15*cm);
+	    new G4Box("block81",160*cm,25*cm,20*cm);
 
   block81_Logical =
 	    new G4LogicalVolume(block81, Pb, "block81_Logical", 0, 0, 0);
 	block81vis = new G4VisAttributes(grey);
 	block81_Logical->SetVisAttributes(block81vis);
 	
-		new G4PVPlacement(0, G4ThreeVector(trans_x , trans_y,181*cm-distcollimatortotarget-
-	95*cm+15*cm+trans_z ), block81_Logical, "block", world_log, 0, 0);
+		new G4PVPlacement(0, G4ThreeVector(trans_x , trans_y,71*cm-distcollimatortotarget
+	+trans_z ), block81_Logical, "block", world_log, 0, 0);
 //End Block 81---------------------------------------
 
-/************************* Detectors*****************/
+/************************* Detector 1*****************/
 
 
 //First Detector. Sole one on the right side. Angle is 95 degrees relativ to the beam.
@@ -847,8 +855,8 @@ block81 =
   /********************************************************************/
 // At 90 Degree angle relativ to the beam.
 
-  G4RotationMatrix* rmPol=new G4RotationMatrix();
-  rmPol->rotateY(pol_Angle);
+  G4RotationMatrix* rmpol=new G4RotationMatrix();
+  rmpol->rotateY(pol_Angle);
 
   G4ThreeVector polarimeterDetector_Position=G4ThreeVector(pol_Distance*sin(pol_theta)*cos(pol_phi), pol_Distance*cos(pol_theta), pol_Distance*sin(pol_theta)*sin(pol_phi));
   
@@ -856,7 +864,7 @@ block81 =
 //Pointer benutzt
   //G4LogicalVolume* crystalp_Logical = polarimeterDetector->Get_Logical();
 
-  new G4PVPlacement(rmPol, polarimeterDetector_Position, polarimeterDetector_Logical, "Polarimeter", world_log, false, 0);
+  new G4PVPlacement(rmpol, polarimeterDetector_Position, polarimeterDetector_Logical, "Polarimeter", world_log, false, 0);
 
   // BGO of Polarimeter
   
@@ -866,7 +874,7 @@ block81 =
   //Auch hier wurde G4LogicalVolume* hinzugefügt
   //G4LogicalVolume* bgoCrystalp_Logical = bgop->Get_Crystal_Logical();
   
-  new G4PVPlacement(rmPol, bgop_Position, bgop_Logical, "bgop", world_log, false, 0);
+  new G4PVPlacement(rmpol, bgop_Position, bgop_Logical, "bgop", world_log, false, 0);
 
 //Additional Blocks to make the target chamber more realistic
 
@@ -879,7 +887,7 @@ G4Box *block91;
 G4VisAttributes *block91vis;
 
 block91 =
-	    new G4Box("block91",3.75*cm,40*cm,19*cm);
+	    new G4Box("block91",3.75*cm,25*cm,19*cm);
 
   block91_Logical =
 	    new G4LogicalVolume(block91, Pb, "block91_Logical", 0, 0, 0);
@@ -902,7 +910,7 @@ G4Box *block92;
 G4VisAttributes *block92vis;
 
 block92 =
-	    new G4Box("block92",3.75*cm,40*cm,19*cm+1.131*cm);
+	    new G4Box("block92",3.75*cm,25*cm,19*cm+1.131*cm);
 
   block92_Logical =
 	    new G4LogicalVolume(block92, Pb, "block92_Logical", 0, 0, 0);
@@ -915,7 +923,138 @@ block92 =
 
 
 
-//End Block 91
+//End Block 92
+//Triangle through which the hole in front of Detector 2 exits.
+//Beginning Block 93
+G4LogicalVolume *block93_Logical;
+G4GenericTrap* itsatrap2;
+G4VisAttributes *block93vis;
+
+vector <G4TwoVector> vertices2;
+
+vertices2.push_back (G4TwoVector(-7.5*cm,25*cm));
+vertices2.push_back (G4TwoVector(-7.5*cm,-25*cm));
+vertices2.push_back (G4TwoVector(0.*cm,-25*cm));
+vertices2.push_back (G4TwoVector(0.*cm,25*cm));
+vertices2.push_back (G4TwoVector(0.*cm,25*cm));
+vertices2.push_back (G4TwoVector(0.*cm,-25*cm));
+vertices2.push_back (G4TwoVector(0.*cm,-25*cm));
+vertices2.push_back (G4TwoVector(0.*cm,25*cm));
+
+
+itsatrap2 = new G4GenericTrap("itsatrap2",   (8.938/2)*cm,
+         vertices2);
+         
+         ///////////////////////////////
+
+
+G4ThreeVector translationblock93(
+-(+12.5*cm+trans_x ) +bgo21_Distance*sin(g2_theta)*cos(g2_phi),
+-trans_y+bgo21_Distance*cos(g2_theta),
+-(-distcollimatortotarget
+	+2.262*cm+(8.938/2)*cm+trans_z)+bgo21_Distance*sin(g2_theta)*sin(g2_phi)
+);
+
+         
+
+G4SubtractionSolid *itsatrap2withhole;
+
+
+
+itsatrap2withhole = 
+new G4SubtractionSolid("block75minusDetector2andhole-subcase_Solidpol1",
+itsatrap2,subcase_Solid22, &yRot45degblock75, translationblock93);
+//Rotation can stay the same as in Block 75 as we are describing the same hole.
+
+
+/////////////////////////////
+
+
+
+block93_Logical =
+	    new G4LogicalVolume(itsatrap2withhole, Pb, "block93_Logical", 0, 0, 0);
+	block93vis = new G4VisAttributes(leadcolor);
+	block93_Logical->SetVisAttributes(block93vis);
+	
+	new G4PVPlacement(0, G4ThreeVector(+12.5*cm+trans_x , trans_y,-distcollimatortotarget
+	+2.262*cm+(8.938/2)*cm+trans_z ), block93_Logical, "block", world_log, 0, 0);
+
+//End Block93
+
+
+/*****************************Filter************************+*****/
+//Beginning Copper-Filter for Det1
+
+	G4double copperfilter1_Radius =2.5*cm;
+	G4double copperfilter1_Length =3*cm;
+G4ThreeVector copperfilter1_Position = G4ThreeVector(
+copperfilter1_Distance*sin(g1_theta)*cos(g1_phi),
+ copperfilter1_Distance*cos(g1_theta),
+  copperfilter1_Distance*sin(g1_theta)*sin(g1_phi));
+  
+  
+  G4Tubs *copperfilter1_Solid =
+	    new G4Tubs("copperfilter1_Solid", 0. * cm, copperfilter1_Radius,
+	               copperfilter1_Length / 2, 0. * deg, 360. * deg);
+	               
+G4LogicalVolume *copperfilter1_Logical;
+G4VisAttributes *copperfilter1vis;
+
+  copperfilter1_Logical =
+	    new G4LogicalVolume(copperfilter1_Solid, Cu, "copperfilter1_Logical", 0, 0, 0);
+	copperfilter1vis = new G4VisAttributes(orange);
+	copperfilter1_Logical->SetVisAttributes(copperfilter1vis);
+  
+  new G4PVPlacement(rm1, copperfilter1_Position, copperfilter1_Logical, "copperfilter1", world_log, false, 0);
+//End of Filter for Det1
+//Beginning Copper-Filter for Det2
+
+	G4double copperfilter2_Radius =2.5*cm;
+	G4double copperfilter2_Length =3*cm;
+G4ThreeVector copperfilter2_Position = G4ThreeVector(
+copperfilter2_Distance*sin(g2_theta)*cos(g2_phi),
+ copperfilter2_Distance*cos(g2_theta),
+  copperfilter2_Distance*sin(g2_theta)*sin(g2_phi));
+  
+  
+  G4Tubs *copperfilter2_Solid =
+	    new G4Tubs("copperfilter2_Solid", 0. * cm, copperfilter2_Radius,
+	               copperfilter2_Length / 2, 0. * deg, 360. * deg);
+	               
+G4LogicalVolume *copperfilter2_Logical;
+G4VisAttributes *copperfilter2vis;
+
+  copperfilter2_Logical =
+	    new G4LogicalVolume(copperfilter2_Solid, Cu, "copperfilter2_Logical", 0, 0, 0);
+	copperfilter2vis = new G4VisAttributes(orange);
+	copperfilter2_Logical->SetVisAttributes(copperfilter2vis);
+  
+  new G4PVPlacement(rm2, copperfilter2_Position, copperfilter2_Logical, "copperfilter2", world_log, false, 0);
+//End of Filter for Det2
+//Beginning Copper-Filter for Pol
+
+	G4double copperfilterpol_Radius =2.5*cm;
+	G4double copperfilterpol_Length =3*cm;
+G4ThreeVector copperfilterpol_Position = G4ThreeVector(
+copperfilterpol_Distance*sin(pol_theta)*cos(pol_phi),
+ copperfilterpol_Distance*cos(pol_theta),
+  copperfilterpol_Distance*sin(pol_theta)*sin(pol_phi));
+  
+  
+  G4Tubs *copperfilterpol_Solid =
+	    new G4Tubs("copperfilterpol_Solid", 0. * cm, copperfilterpol_Radius,
+	               copperfilterpol_Length / 2, 0. * deg, 360. * deg);
+	               
+G4LogicalVolume *copperfilterpol_Logical;
+G4VisAttributes *copperfilterpolvis;
+
+  copperfilterpol_Logical =
+	    new G4LogicalVolume(copperfilterpol_Solid, Cu, "copperfilterpol_Logical", 0, 0, 0);
+	copperfilterpolvis = new G4VisAttributes(orange);
+	copperfilterpol_Logical->SetVisAttributes(copperfilterpolvis);
+  
+  new G4PVPlacement(rmpol, copperfilterpol_Position, copperfilterpol_Logical, "copperfilterpol", world_log, false, 0);
+//End of Filter for Pol
 // /control/execute init_vis.mac
 
 	return world_phys;
