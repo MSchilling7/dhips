@@ -295,7 +295,8 @@ new G4Sphere("Sphere",
   G4ThreeVector bgo1_Position = G4ThreeVector
   (bgo1_Distance*sin(g1_theta)*cos(g1_phi), bgo1_Distance*cos(g1_theta), bgo1_Distance*sin(g1_theta)*sin(g1_phi));
   
-  G4double copperfilter1_Distance = -(-22*cm+detectordistance1 + germaniumDetector1->Get_Length());
+  G4double copperfilter1_Distance = -(-20*cm+detectordistance1 + germaniumDetector1->Get_Length());
+  G4double leadfilter1_Distance = -(-24*cm+detectordistance1 + germaniumDetector1->Get_Length());
 //Angles and Distances for Detector2
  Germanium2_TUD* germaniumDetector2=new Germanium2_TUD("Germanium2_TUD");
   
@@ -313,7 +314,8 @@ new G4Sphere("Sphere",
 
 
 
-G4double copperfilter2_Distance = -(-22*cm+detectordistance1 + germaniumDetector1->Get_Length());
+G4double copperfilter2_Distance = -(-20*cm+detectordistance1 + germaniumDetector1->Get_Length());
+G4double leadfilter2_Distance = -(-24*cm+detectordistance1 + germaniumDetector1->Get_Length());
 //Angles and Distances for Polarimeter
   Polarimeter_TUD* polarimeterDetector=new Polarimeter_TUD("Polarimeter_TUD");
 
@@ -330,7 +332,8 @@ BGO* bgop = new BGO();
   (bgop_Distance*sin(pol_theta)*cos(pol_phi), bgop_Distance*cos(pol_theta), bgop_Distance*sin(pol_theta)*sin(pol_phi));
 
 
-G4double copperfilterpol_Distance = -(-22*cm+detectordistance1 + germaniumDetector1->Get_Length());
+G4double copperfilterpol_Distance = -(-20*cm+detectordistance1 + germaniumDetector1->Get_Length());
+G4double leadfilterpol_Distance = -(-24*cm+detectordistance1 + germaniumDetector1->Get_Length());
 
 /************************* Iron Shielding *****************/
 // Iron Shielding around the Copper Collimator
@@ -1075,7 +1078,7 @@ G4VisAttributes *copperfilter1vis;
 	copperfilter1_Logical->SetVisAttributes(copperfilter1vis);
   
   new G4PVPlacement(rm1, copperfilter1_Position, copperfilter1_Logical, "copperfilter1", world_log, false, 0);
-//End of Filter for Det1
+//End of Copper-Filter for Det1
 //Beginning Copper-Filter for Det2
 
 	G4double copperfilter2_Radius =2.5*cm;
@@ -1099,7 +1102,7 @@ G4VisAttributes *copperfilter2vis;
 	copperfilter2_Logical->SetVisAttributes(copperfilter2vis);
   
   new G4PVPlacement(rm2, copperfilter2_Position, copperfilter2_Logical, "copperfilter2", world_log, false, 0);
-//End of Filter for Det2
+//End of Copper-Filter for Det2
 //Beginning Copper-Filter for Pol
 
 	G4double copperfilterpol_Radius =2.5*cm;
@@ -1123,7 +1126,79 @@ G4VisAttributes *copperfilterpolvis;
 	copperfilterpol_Logical->SetVisAttributes(copperfilterpolvis);
   
   new G4PVPlacement(rmpol, copperfilterpol_Position, copperfilterpol_Logical, "copperfilterpol", world_log, false, 0);
-//End of Filter for Pol
+//End of Copper-Filter for Pol
+//Beginning Copper-Filter for Det1
+
+	G4double leadfilter1_Radius =2.5*cm;
+	G4double leadfilter1_Length =3*cm;
+G4ThreeVector leadfilter1_Position = G4ThreeVector(
+leadfilter1_Distance*sin(g1_theta)*cos(g1_phi),
+ leadfilter1_Distance*cos(g1_theta),
+  leadfilter1_Distance*sin(g1_theta)*sin(g1_phi));
+  
+  
+  G4Tubs *leadfilter1_Solid =
+	    new G4Tubs("leadfilter1_Solid", 0. * cm, leadfilter1_Radius,
+	               leadfilter1_Length / 2, 0. * deg, 360. * deg);
+	               
+G4LogicalVolume *leadfilter1_Logical;
+G4VisAttributes *leadfilter1vis;
+
+  leadfilter1_Logical =
+	    new G4LogicalVolume(leadfilter1_Solid, Pb, "leadfilter1_Logical", 0, 0, 0);
+	leadfilter1vis = new G4VisAttributes(leadcolor);
+	leadfilter1_Logical->SetVisAttributes(leadfilter1vis);
+  
+  new G4PVPlacement(rm1, copperfilter1_Position, copperfilter1_Logical, "copperfilter1", world_log, false, 0);
+//End of Copper-Filter for Det1
+//Beginning Copper-Filter for Det2
+
+	G4double leadfilter2_Radius =2.5*cm;
+	G4double leadfilter2_Length =3*cm;
+G4ThreeVector leadfilter2_Position = G4ThreeVector(
+leadfilter2_Distance*sin(g2_theta)*cos(g2_phi),
+ leadfilter2_Distance*cos(g2_theta),
+  leadfilter2_Distance*sin(g2_theta)*sin(g2_phi));
+  
+  
+  G4Tubs *leadfilter2_Solid =
+	    new G4Tubs("leadfilter2_Solid", 0. * cm, leadfilter2_Radius,
+	               leadfilter2_Length / 2, 0. * deg, 360. * deg);
+	               
+G4LogicalVolume *leadfilter2_Logical;
+G4VisAttributes *leadfilter2vis;
+
+  leadfilter2_Logical =
+	    new G4LogicalVolume(leadfilter2_Solid, Pb, "leadfilter2_Logical", 0, 0, 0);
+	leadfilter2vis = new G4VisAttributes(leadcolor);
+	leadfilter2_Logical->SetVisAttributes(leadfilter2vis);
+  
+  new G4PVPlacement(rm2, leadfilter2_Position, leadfilter2_Logical, "leadfilter2", world_log, false, 0);
+//End of Copper-Filter for Det2
+//Beginning Copper-Filter for Pol
+
+	G4double leadfilterpol_Radius =2.5*cm;
+	G4double leadfilterpol_Length =3*cm;
+G4ThreeVector leadfilterpol_Position = G4ThreeVector(
+leadfilterpol_Distance*sin(pol_theta)*cos(pol_phi),
+ leadfilterpol_Distance*cos(pol_theta),
+  leadfilterpol_Distance*sin(pol_theta)*sin(pol_phi));
+  
+  
+  G4Tubs *leadfilterpol_Solid =
+	    new G4Tubs("leadfilterpol_Solid", 0. * cm, copperfilterpol_Radius,
+	               leadfilterpol_Length / 2, 0. * deg, 360. * deg);
+	               
+G4LogicalVolume *leadfilterpol_Logical;
+G4VisAttributes *leadfilterpolvis;
+
+  copperfilterpol_Logical =
+	    new G4LogicalVolume(copperfilterpol_Solid, PB, "copperfilterpol_Logical", 0, 0, 0);
+	copperfilterpolvis = new G4VisAttributes(leadcolor);
+	copperfilterpol_Logical->SetVisAttributes(leadfilterpolvis);
+  
+  new G4PVPlacement(rmpol, leadfilterpol_Position, leadfilterpol_Logical, "leadfilterpol", world_log, false, 0);
+//End of Copper-Filter for Pol
 // /control/execute init_vis.mac
 
 	return world_phys;
