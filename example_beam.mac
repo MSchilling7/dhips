@@ -1,6 +1,6 @@
 /run/initialize
 
-/gps/particle neutron
+/gps/particle gamma
 /gps/pos/type Beam
 # Uncomment one of the two following blocks for a ...
 # ... perfectly circular beam
@@ -12,7 +12,7 @@
 
 # Uncomment one of the two following blocks for a ...
 # ... beam along the z-axis
-/gps/pos/centre 100. 0. -200. mm
+/gps/pos/centre 0. 0. -1512. mm
 /gps/direction 0. 0. 1.
 # ... beam that originates in (0. 0. z0) and hits the point (0. 0. z) at an angle phi (Replace phi, z0 and z in the following lines)
 #/gps/pos/centre 0. tan(z0-z) z0
@@ -24,7 +24,7 @@
 # Uncomment to give the beam a Gaussian energy distribution
 	/gps/ene/type Gauss
 	/gps/ene/sigma 0.15 MeV
-/gps/ene/mono 5. MeV
+/gps/ene/mono 15. MeV
 
 /run/printProgress 100000
 /run/beamOn 10
