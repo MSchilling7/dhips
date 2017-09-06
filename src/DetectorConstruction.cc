@@ -60,7 +60,7 @@ G4VPhysicalVolume *DetectorConstruction::Construct() {
 	G4Colour yellow(1.0, 1.0, 0.0);
 	G4Colour orange(1.0, 0.5, 0.0);
 	G4Colour light_orange(1.0, 0.82, 0.36);
-	G4Colour leadcolor=green;
+	G4Colour leadcolor=grey;
 
 	G4NistManager *man = G4NistManager::Instance();
 	//Materials *mat = new Materials();
