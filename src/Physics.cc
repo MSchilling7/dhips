@@ -84,7 +84,7 @@ void Physics::ConstructProcess() {
 	AddTransportation();
 	ConstructEMPenelope();
 	// ConstructEMLivermore();
-	//ConstructHPNeutron();
+	ConstructHPNeutron();
 	ConstructChargedParticle();
 }
 

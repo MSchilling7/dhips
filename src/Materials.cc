@@ -32,15 +32,15 @@ void Materials::ConstructMaterials() {
 
 	// Enriched Ti target from 2014/2015 NRF experiments
 	G4Isotope *Ti50 =
-	    new G4Isotope(name = "50Ti", z = 22, n = 28, a = 49.945791 * g / mole);
+	    new G4Isotope(name = "50Ti", z = 22, n = 50, a = 49.945791 * g / mole);
 	G4Isotope *Ti49 =
-	    new G4Isotope(name = "49Ti", z = 22, n = 27, a = 48.947870 * g / mole);
+	    new G4Isotope(name = "49Ti", z = 22, n = 49, a = 48.947870 * g / mole);
 	G4Isotope *Ti48 =
-	    new G4Isotope(name = "48Ti", z = 22, n = 26, a = 47.947946 * g / mole);
+	    new G4Isotope(name = "48Ti", z = 22, n = 48, a = 47.947946 * g / mole);
 	G4Isotope *Ti47 =
-	    new G4Isotope(name = "47Ti", z = 22, n = 25, a = 46.951763 * g / mole);
+	    new G4Isotope(name = "47Ti", z = 22, n = 47, a = 46.951763 * g / mole);
 	G4Isotope *Ti46 =
-	    new G4Isotope(name = "46Ti", z = 22, n = 24, a = 45.952631 * g / mole);
+	    new G4Isotope(name = "46Ti", z = 22, n = 46, a = 45.952631 * g / mole);
 
 	G4Element *enriched_Ti =
 	    new G4Element(name = "enriched Ti", symbol = "Ti", ncomponents = 5);
@@ -80,13 +80,13 @@ void Materials::ConstructMaterials() {
 	// isotopes from the natural abundance
 
 	G4Isotope *Cr50 =
-	    new G4Isotope(name = "50Cr", z = 24, n = 26, a = 49.946041 * g / mole);
+	    new G4Isotope(name = "50Cr", z = 24, n = 50, a = 49.946041 * g / mole);
 	G4Isotope *Cr52 =
-	    new G4Isotope(name = "52Cr", z = 24, n = 28, a = 51.940504 * g / mole);
+	    new G4Isotope(name = "52Cr", z = 24, n = 52, a = 51.940504 * g / mole);
 	G4Isotope *Cr53 =
-	    new G4Isotope(name = "53Cr", z = 24, n = 29, a = 52.940646 * g / mole);
+	    new G4Isotope(name = "53Cr", z = 24, n = 53, a = 52.940646 * g / mole);
 	G4Isotope *Cr54 =
-	    new G4Isotope(name = "54Cr", z = 24, n = 30, a = 53.938878 * g / mole);
+	    new G4Isotope(name = "54Cr", z = 24, n = 54, a = 53.938878 * g / mole);
 
 	G4Element *enriched_Cr =
 	    new G4Element(name = "enriched Cr", symbol = "Cr", ncomponents = 4);
@@ -122,23 +122,23 @@ void Materials::ConstructMaterials() {
 	target_Cr2O3->AddElement(nat_O, natoms = 3);
 
 	// Tin target, enriched in 116Sn
-	G4Isotope *Sn114 = new G4Isotope(name = "114Sn", z = 50, n = 64,
+	G4Isotope *Sn114 = new G4Isotope(name = "114Sn", z = 50, n = 114,
 	                                 a = 113.902780 * g / mole);
-	G4Isotope *Sn115 = new G4Isotope(name = "115Sn", z = 50, n = 65,
+	G4Isotope *Sn115 = new G4Isotope(name = "115Sn", z = 50, n =115,
 	                                 a = 114.903345 * g / mole);
-	G4Isotope *Sn116 = new G4Isotope(name = "116Sn", z = 50, n = 66,
+	G4Isotope *Sn116 = new G4Isotope(name = "116Sn", z = 50, n =116,
 	                                 a = 115.901743 * g / mole);
-	G4Isotope *Sn117 = new G4Isotope(name = "117Sn", z = 50, n = 67,
+	G4Isotope *Sn117 = new G4Isotope(name = "117Sn", z = 50, n = 117,
 	                                 a = 116.902954 * g / mole);
-	G4Isotope *Sn118 = new G4Isotope(name = "118Sn", z = 50, n = 68,
+	G4Isotope *Sn118 = new G4Isotope(name = "118Sn", z = 50, n = 118,
 	                                 a = 117.901607 * g / mole);
-	G4Isotope *Sn119 = new G4Isotope(name = "119Sn", z = 50, n = 69,
+	G4Isotope *Sn119 = new G4Isotope(name = "119Sn", z = 50, n =119,
 	                                 a = 118.903311 * g / mole);
-	G4Isotope *Sn120 = new G4Isotope(name = "120Sn", z = 50, n = 70,
+	G4Isotope *Sn120 = new G4Isotope(name = "120Sn", z = 50, n = 120,
 	                                 a = 119.902202 * g / mole);
-	G4Isotope *Sn122 = new G4Isotope(name = "122Sn", z = 50, n = 72,
+	G4Isotope *Sn122 = new G4Isotope(name = "122Sn", z = 50, n = 122,
 	                                 a = 121.903444 * g / mole);
-	G4Isotope *Sn124 = new G4Isotope(name = "124Sn", z = 50, n = 74,
+	G4Isotope *Sn124 = new G4Isotope(name = "124Sn", z = 50, n = 124,
 	                                 a = 123.905277 * g / mole);
 
 	G4Element *enriched_Sn =
