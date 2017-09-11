@@ -17,17 +17,14 @@ int main(int argc, char* argv[]){
 	TString pattern2 = argv[3]; // File name pattern 2
 	TString outputfilename = argv[4]; // Output file name
 
-	float energy = 0.;
-	if(argc == 6){
-		energy = atof(argv[5]);
-		cout << "Energy = " << energy*1000. << " keV." << endl;
-	}
+
+	
 
 	// Find all files in the current directory that contain pattern1 and pattern1 and connect them to a TChain
 	TSystemDirectory dir(".",".");
 
 	TList *files = dir.GetListOfFiles();
-	TChain utr("utr");
+	TChain dhips("dhips");
 
 	cout << "Joining files that contain the patterns '" << pattern1 << "' and '" << pattern2 << "':" << endl;
 	
@@ -41,52 +38,44 @@ int main(int argc, char* argv[]){
 			fname = file->GetName();
 			if(!file->IsDirectory() && fname.Contains(pattern1) && fname.Contains(pattern2)){
 				cout << fname << endl;
-				utr.Add(fname);
+				dhips.Add(fname);
 			}
 		}
 	}
 
 	// Create histogram
-	TH1* h1 = new TH1F("h1", "Energy Deposition in HPGe1 (only photons)", 10000, 0.0005, 10.0005);
-	TH1* h2 = new TH1F("h2", "Energy Deposition in HPGe2 (only photons)", 10000, 0.0005, 10.0005);
-	TH1* h3 = new TH1F("h3", "Energy Deposition in HPGe3 (only photons)", 10000, 0.0005, 10.0005);
-	TH1* h4 = new TH1F("h4", "Energy Deposition in HPGe4 (only photons)", 10000, 0.0005, 10.0005);
+	TH1* h1 = new TH1F("h1", "ekin of Photons hitting the Target", 500, 0.0005, 10.0005);
+	TH1* h2 = new TH1F("h2", "X-coordinate of Photons hitting the Target", 500, -11, 11.);
+	TH1* h3 = new TH1F("h3", "Y-coordinate of Photons hitting the Target", 500,-11, 11.);
+	TH1* h4 = new TH1F("h4", "Z-coordinate of Photons hitting the Target", 500, 5., 5.);
+						
 
 	// Fill histogram from TBranch in TChain with user-defined conditions
-	Double_t Edep, Volume, Particle;
+	Double_t Ekin, X,Y,Z,Volume, Particle;
 
-	utr.SetBranchAddress("edep", &Edep);
-	utr.SetBranchAddress("particle", &Particle);
-	utr.SetBranchAddress("volume", &Volume);
+	dhips.SetBranchAddress("ekin", &Ekin);
+		dhips.SetBranchAddress("x", &X);
+	dhips.SetBranchAddress("y", &Y);
+	dhips.SetBranchAddress("z", &Z);
+		dhips.SetBranchAddress("volume", &Volume);
+	dhips.SetBranchAddress("particle", &Particle);
 
-	for(int i = 0; i < utr.GetEntries(); i++){
-		utr.GetEntry(i);
 
-		if(Edep > 0. && Particle == 22){
-			if(Volume == 1)
-				h1->Fill(Edep);
-			if(Volume == 2)
-				h2->Fill(Edep);
-			if(Volume == 3)
-				h3->Fill(Edep);
-			if(Volume == 4)
-				h4->Fill(Edep);
+	for(int i = 0; i < dhips.GetEntries(); i++){
+		dhips.GetEntry(i);
+
+		if(Ekin > 0. && Particle == 22){
+			if(Volume == 0)
+				{h1->Fill(Ekin);
+				h2->Fill(X);
+				h3->Fill(Y);
+				h4->Fill(Z);
+			}
+
 		}
 	}
 
-	if(argc == 6){
-		int nbin = (int) (energy * 1000.);
-		cout << "Counts in histograms at " << energy << " MeV (Reading from bin # " << nbin <<")" << endl;
-		cout << "Bin edges: [" << h1->GetBinLowEdge(nbin) << ", " << (h1->GetBinLowEdge(nbin) + h1->GetBinWidth(nbin)) << "]" << endl;
-
-//		cout << "h1\t" << h1->GetBinContent(nbin) << endl;
-//		cout << "h2\t" << h2->GetBinContent(nbin) << endl;
-//		cout << "h3\t" << h3->GetBinContent(nbin) << endl;
-//		cout << "h4\t" << h4->GetBinContent(nbin) << endl;
-
-		cout << "[" << h1->GetBinContent(nbin) << ", " <<h2->GetBinContent(nbin) << ", " <<h3->GetBinContent(nbin) << ", " <<h4->GetBinContent(nbin) << "]" << endl;
-
-	}
+	
 
 	// Write histogram to a new TFile
 	TFile *of = new TFile(outputfilename, "RECREATE");
@@ -95,7 +84,7 @@ int main(int argc, char* argv[]){
 	h2->Write();
 	h3->Write();
 	h4->Write();
-
+	
 	of->Close();
 
 	cout << "Created output file " << outputfilename << endl;

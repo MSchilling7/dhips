@@ -22,3 +22,7 @@ open_code.sh
 *REMOTE*
 *BASE*
 *.orig
+
+# Compiled analysis scripts
+getHistogram
+histogramToTxt

@@ -76,7 +76,7 @@ G4VPhysicalVolume *DetectorConstruction::Construct() {
 	G4Material *Co = man->FindOrBuildMaterial("G4_Co");
 	G4double Co_density = 8.9 * g / cm3; // From GEANT4 Material Database
 	G4Material *PE = man->FindOrBuildMaterial("G4_POLYETHYLENE");
-
+    G4Material *H2O = man->FindOrBuildMaterial("G4_WATER");
 	/************************* World volume *****************/
 
 	G4double world_x = 6. * m; //Total length of World Volume
@@ -205,12 +205,12 @@ logical_volume_name << "block" << i << "_Logical";
 
 	//G4double collimator_entrance_z = -distcollimatortotarget + trans_z - 11.*block_z;
 
-	RadiatorTarget *radiatorTarget1 = new RadiatorTarget(0.5*mm, "Au", "Target_1", 0.*mm, "AIR");
+	RadiatorTarget *radiatorTarget1 = new RadiatorTarget(3*mm, "Pb", "Target_1", 0.*mm, "AIR");
 	G4LogicalVolume *radiator_Holder1_Logical = radiatorTarget1->Get_Logical();
 
 	new G4PVPlacement(0, G4ThreeVector(0., radiatorTarget1->Get_Window_Position(), -distcollimatortotarget + trans_z -11.*block_z - radiator_holder1_to_collimator - radiatorTarget1->Get_Z()), radiator_Holder1_Logical, "radiator_Holder1", world_log, false, 0);
 
-	RadiatorTarget *radiatorTarget2 = new RadiatorTarget(3.*mm, "Au", "Target_2", 0.*mm, "AIR");
+	RadiatorTarget *radiatorTarget2 = new RadiatorTarget(3*mm, "Pb", "Target_2", 14.*mm, "Pb");
 	G4LogicalVolume *radiator_Holder2_Logical = radiatorTarget2->Get_Logical();
 
 	new G4PVPlacement(0, G4ThreeVector(0., radiatorTarget2->Get_Window_Position(), -distcollimatortotarget + trans_z -11.*block_z - radiator_holder2_to_collimator - radiatorTarget2->Get_Z()), radiator_Holder2_Logical, "radiator_Holder2", world_log, false, 0);
@@ -761,13 +761,7 @@ block75= new G4UnionSolid("blocksum_751_752", blocksum_751_752, itsatrap,0, G4Th
 G4UnionSolid *subcase_Solid21;
 G4Tubs *subcase_Solid22;
 
-//BGO POSITION
-//G4ThreeVector bgo2_Position = G4ThreeVector
-//(bgo2_Distance*sin(g2_theta)*cos(g2_phi),
- //bgo2_Distance*cos(g2_theta),
-  //bgo2_Distance*sin(g2_theta)*sin(g2_phi));
 
-//Center of Block in WorldCoordinates (15*cm+trans_x ,trans_y,		 -distcollimatortotarget+14.55/2*cm	+trans_z)
 
 G4double bgo21_Distance=bgo2_Distance+10*cm;
 
@@ -1234,256 +1228,297 @@ G4VisAttributes *leadfilterpolvis;
 
 	/************************* NRF Target *****************/
 
-  	// Distance of the NRF target in z-direction to the origin
-	G4double target_distance = 0. * mm;
+  	//// Distance of the NRF target in z-direction to the origin
+	//G4double target_distance = 0. * mm;
 
-	G4double target_radius = 12. * mm;
-	G4double target_area = pi * target_radius * target_radius;
+	//G4double target_radius = 12. * mm;
+	//G4double target_area = pi * target_radius * target_radius;
 
-	// Masses of target constituents, measured by M. Schilling, M. Zweidinger
-	// (and P. Ries ?)
-	// Neglected the UV hardened glue
-	G4double Fe1_mass = 0.4948 * g;
-	G4double Co1_mass = 0.5153 * g;
-	G4double Al1_mass = 0.610 * g;
-	G4double Al2_mass = 0.6074 * g;
-	G4double Cr2O3_1_mass = 0.9574 * g; // "Kleber II" is missing here
-	G4double Sn_mass = 9.1516 * g;
-	G4double Cr2O3_2_mass = 0.9372 * g; // Subtracted "Dose (ohne Deckel) + ...
-	                                    // + 116Sn" from "Dose (ohne Deckel) +
-	                                    // ... + 52Cr2O3II"
-	G4double Al3_mass = 0.6113 * g;
-	G4double Al4_mass = 0.6111 * g;
-	G4double Fe2_mass = 0.5790 * g;
-	G4double Co2_mass = 0.5392 * g;
+	//// Masses of target constituents, measured by M. Schilling, M. Zweidinger
+	//// (and P. Ries ?)
+	//// Neglected the UV hardened glue
+	//G4double Fe1_mass = 0.4948 * g;
+	//G4double Co1_mass = 0.5153 * g;
+	//G4double Al1_mass = 0.610 * g;
+	//G4double Al2_mass = 0.6074 * g;
+	//G4double Cr2O3_1_mass = 0.9574 * g; // "Kleber II" is missing here
+	//G4double Sn_mass = 9.1516 * g;
+	//G4double Cr2O3_2_mass = 0.9372 * g; // Subtracted "Dose (ohne Deckel) + ...
+	                                    //// + 116Sn" from "Dose (ohne Deckel) +
+	                                    //// ... + 52Cr2O3II"
+	//G4double Al3_mass = 0.6113 * g;
+	//G4double Al4_mass = 0.6111 * g;
+	//G4double Fe2_mass = 0.5790 * g;
+	//G4double Co2_mass = 0.5392 * g;
 
-	// Calculate length of cylindric target constituents from their known mass,
-	// density and radius
-	G4double Fe1_thickness = Fe1_mass / Fe_density / target_area;
-	G4double Co1_thickness = Co1_mass / Co_density / target_area;
-	G4double Al1_thickness = Al1_mass / Al_density / target_area;
-	G4double Al2_thickness = Al2_mass / Al_density / target_area;
-	G4double Cr2O3_1_thickness =
-	    Cr2O3_1_mass / mat->Get_Cr2O3_density() / target_area;
-	G4double Sn_thickness = Sn_mass / mat->Get_Sn_density() / target_area;
-	G4double Cr2O3_2_thickness =
-	    Cr2O3_2_mass / mat->Get_Cr2O3_density() / target_area;
-	G4double Al3_thickness = Al3_mass / Al_density / target_area;
-	G4double Al4_thickness = Al4_mass / Al_density / target_area;
-	G4double Fe2_thickness = Fe2_mass / Fe_density / target_area;
-	G4double Co2_thickness = Co2_mass / Co_density / target_area;
+	//// Calculate length of cylindric target constituents from their known mass,
+	//// density and radius
+	//G4double Fe1_thickness = Fe1_mass / Fe_density / target_area;
+	//G4double Co1_thickness = Co1_mass / Co_density / target_area;
+	//G4double Al1_thickness = Al1_mass / Al_density / target_area;
+	//G4double Al2_thickness = Al2_mass / Al_density / target_area;
+	//G4double Cr2O3_1_thickness =
+	    //Cr2O3_1_mass / mat->Get_Cr2O3_density() / target_area;
+	//G4double Sn_thickness = Sn_mass / mat->Get_Sn_density() / target_area;
+	//G4double Cr2O3_2_thickness =
+	    //Cr2O3_2_mass / mat->Get_Cr2O3_density() / target_area;
+	//G4double Al3_thickness = Al3_mass / Al_density / target_area;
+	//G4double Al4_thickness = Al4_mass / Al_density / target_area;
+	//G4double Fe2_thickness = Fe2_mass / Fe_density / target_area;
+	//G4double Co2_thickness = Co2_mass / Co_density / target_area;
 
-	// Dimensions of the target container. Calculate its length from the length
-	// of all targets
-	G4double TargetContainerCap_Thickness = 2. * mm;  // Estimated
-	G4double TargetContainerWall_Thickness = 1. * mm; // Estimated
-	G4double TargetContainerWall_Length =
-	    Fe1_thickness + Co1_thickness + Al1_thickness + Al2_thickness +
-	    Cr2O3_1_thickness + Sn_thickness + Cr2O3_2_thickness + Al3_thickness +
-	    Al4_thickness + Co2_thickness + Fe2_thickness;
+	//// Dimensions of the target container. Calculate its length from the length
+	//// of all targets
+	//G4double TargetContainerCap_Thickness = 2. * mm;  // Estimated
+	//G4double TargetContainerWall_Thickness = 1. * mm; // Estimated
+	//G4double TargetContainerWall_Length =
+	    //Fe1_thickness + Co1_thickness + Al1_thickness + Al2_thickness +
+	    //Cr2O3_1_thickness + Sn_thickness + Cr2O3_2_thickness + Al3_thickness +
+	    //Al4_thickness + Co2_thickness + Fe2_thickness;
 
-	G4Tubs *TargetContainerCap1_Solid =
-	    new G4Tubs("TargetContainerCap1_Solid", 0. * mm,
-	               target_radius + TargetContainerWall_Thickness,
-	               TargetContainerCap_Thickness * 0.5, 0., twopi);
-	G4LogicalVolume *TargetContainerCap1_Logical = new G4LogicalVolume(
-	    TargetContainerCap1_Solid, PE, "TargetContainerCap1_Logical");
-	G4VisAttributes *TargetContainerCap1_vis = new G4VisAttributes(cyan);
-	TargetContainerCap1_Logical->SetVisAttributes(TargetContainerCap1_vis);
-	new G4PVPlacement(
-	    0, G4ThreeVector(0., 0., target_distance +
-	                                 0.5 * TargetContainerCap_Thickness),
-	    TargetContainerCap1_Logical, "TargetContainerCap1", world_log, 0, 0);
+	//G4Tubs *TargetContainerCap1_Solid =
+	    //new G4Tubs("TargetContainerCap1_Solid", 0. * mm,
+	               //target_radius + TargetContainerWall_Thickness,
+	               //TargetContainerCap_Thickness * 0.5, 0., twopi);
+	//G4LogicalVolume *TargetContainerCap1_Logical = new G4LogicalVolume(
+	    //TargetContainerCap1_Solid, PE, "TargetContainerCap1_Logical");
+	//G4VisAttributes *TargetContainerCap1_vis = new G4VisAttributes(cyan);
+	//TargetContainerCap1_Logical->SetVisAttributes(TargetContainerCap1_vis);
+	//new G4PVPlacement(
+	    //0, G4ThreeVector(0., 0., target_distance +
+	                                 //0.5 * TargetContainerCap_Thickness),
+	    //TargetContainerCap1_Logical, "TargetContainerCap1", world_log, 0, 0);
 
-	G4Tubs *TargetContainerWall_Solid =
-	    new G4Tubs("TargetContainerWall_Solid", target_radius,
-	               target_radius + TargetContainerWall_Thickness,
-	               TargetContainerWall_Length * 0.5, 0., twopi);
-	G4LogicalVolume *TargetContainerWall_Logical = new G4LogicalVolume(
-	    TargetContainerWall_Solid, PE, "TargetContainerWall_Logical");
-	G4VisAttributes *TargetContainerWall_vis = new G4VisAttributes(cyan);
-	TargetContainerWall_Logical->SetVisAttributes(TargetContainerWall_vis);
-//	new G4PVPlacement(
-//	    0, G4ThreeVector(0., 0.,  target_distance +
-//	                                 TargetContainerCap_Thickness +
-//	                                 0.5 * TargetContainerWall_Length),
-//	    TargetContainerWall_Logical, "TargetContainerWall", world_log, 0, 0);
+	//G4Tubs *TargetContainerWall_Solid =
+	    //new G4Tubs("TargetContainerWall_Solid", target_radius,
+	               //target_radius + TargetContainerWall_Thickness,
+	               //TargetContainerWall_Length * 0.5, 0., twopi);
+	//G4LogicalVolume *TargetContainerWall_Logical = new G4LogicalVolume(
+	    //TargetContainerWall_Solid, PE, "TargetContainerWall_Logical");
+	//G4VisAttributes *TargetContainerWall_vis = new G4VisAttributes(cyan);
+	//TargetContainerWall_Logical->SetVisAttributes(TargetContainerWall_vis);
+////	new G4PVPlacement(
+////	    0, G4ThreeVector(0., 0.,  target_distance +
+////	                                 TargetContainerCap_Thickness +
+////	                                 0.5 * TargetContainerWall_Length),
+////	    TargetContainerWall_Logical, "TargetContainerWall", world_log, 0, 0);
 
-	// Place all the target material inside the TargetContainerWall to avoid
-	// overlaps
-	G4Tubs *Fe1_Solid = new G4Tubs("Fe1_Solid", 0. * mm, target_radius,
-	                               Fe1_thickness * 0.5, 0., twopi);
-	G4LogicalVolume *Fe1_Logical =
-	    new G4LogicalVolume(Fe1_Solid, Fe, "Fe1_Logical");
-	G4VisAttributes *Fe1_vis = new G4VisAttributes(red);
-	Fe1_Logical->SetVisAttributes(Fe1_vis);
-	new G4PVPlacement(
-	    0, G4ThreeVector(0., 0., target_distance +
-	                                 TargetContainerCap_Thickness +
-	                                 Fe1_thickness * 0.5),
-	    Fe1_Logical, "Fe1", world_log, 0, 0);
+	//// Place all the target material inside the TargetContainerWall to avoid
+	//// overlaps
+	//G4Tubs *Fe1_Solid = new G4Tubs("Fe1_Solid", 0. * mm, target_radius,
+	                               //Fe1_thickness * 0.5, 0., twopi);
+	//G4LogicalVolume *Fe1_Logical =
+	    //new G4LogicalVolume(Fe1_Solid, Fe, "Fe1_Logical");
+	//G4VisAttributes *Fe1_vis = new G4VisAttributes(red);
+	//Fe1_Logical->SetVisAttributes(Fe1_vis);
+	//new G4PVPlacement(
+	    //0, G4ThreeVector(0., 0., target_distance +
+	                                 //TargetContainerCap_Thickness +
+	                                 //Fe1_thickness * 0.5),
+	    //Fe1_Logical, "Fe1", world_log, 0, 0);
 
-	G4Tubs *Co1_Solid = new G4Tubs("Co1_Solid", 0. * mm, target_radius,
-	                               Co1_thickness * 0.5, 0., twopi);
-	G4LogicalVolume *Co1_Logical =
-	    new G4LogicalVolume(Co1_Solid, Co, "Co1_Logical");
-	G4VisAttributes *Co1_vis = new G4VisAttributes(white);
-	Co1_Logical->SetVisAttributes(Co1_vis);
-	new G4PVPlacement(
-	    0, G4ThreeVector(0., 0., target_distance +
-	                                 TargetContainerCap_Thickness +
-	                                 Fe1_thickness + 0.5 * Co1_thickness),
-	    Co1_Logical, "Co1", world_log, 0, 0);
+	//G4Tubs *Co1_Solid = new G4Tubs("Co1_Solid", 0. * mm, target_radius,
+	                               //Co1_thickness * 0.5, 0., twopi);
+	//G4LogicalVolume *Co1_Logical =
+	    //new G4LogicalVolume(Co1_Solid, Co, "Co1_Logical");
+	//G4VisAttributes *Co1_vis = new G4VisAttributes(white);
+	//Co1_Logical->SetVisAttributes(Co1_vis);
+	//new G4PVPlacement(
+	    //0, G4ThreeVector(0., 0., target_distance +
+	                                 //TargetContainerCap_Thickness +
+	                                 //Fe1_thickness + 0.5 * Co1_thickness),
+	    //Co1_Logical, "Co1", world_log, 0, 0);
 
-	G4Tubs *Al1_Solid = new G4Tubs("Al1_Solid", 0. * mm, target_radius,
-	                               Al1_thickness * 0.5, 0., twopi);
-	G4LogicalVolume *Al1_Logical =
-	    new G4LogicalVolume(Al1_Solid, Al, "Al1_Logical");
-	G4VisAttributes *Al1_vis = new G4VisAttributes(grey);
-	Al1_Logical->SetVisAttributes(Al1_vis);
-	new G4PVPlacement(
-	    0,
-	    G4ThreeVector(0., 0., target_distance +
-	                              TargetContainerCap_Thickness + Co1_thickness +
-	                              Fe1_thickness + 0.5 * Al1_thickness),
-	    Al1_Logical, "Al1", world_log, 0, 0);
+	//G4Tubs *Al1_Solid = new G4Tubs("Al1_Solid", 0. * mm, target_radius,
+	                               //Al1_thickness * 0.5, 0., twopi);
+	//G4LogicalVolume *Al1_Logical =
+	    //new G4LogicalVolume(Al1_Solid, Al, "Al1_Logical");
+	//G4VisAttributes *Al1_vis = new G4VisAttributes(grey);
+	//Al1_Logical->SetVisAttributes(Al1_vis);
+	//new G4PVPlacement(
+	    //0,
+	    //G4ThreeVector(0., 0., target_distance +
+	                              //TargetContainerCap_Thickness + Co1_thickness +
+	                              //Fe1_thickness + 0.5 * Al1_thickness),
+	    //Al1_Logical, "Al1", world_log, 0, 0);
 
-	G4Tubs *Al2_Solid = new G4Tubs("Al2_Solid", 0. * mm, target_radius,
-	                               Al2_thickness * 0.5, 0., twopi);
-	G4LogicalVolume *Al2_Logical =
-	    new G4LogicalVolume(Al2_Solid, Al, "Al2_Logical");
-	G4VisAttributes *Al2_vis = new G4VisAttributes(grey);
-	Al2_Logical->SetVisAttributes(Al2_vis);
-	new G4PVPlacement(
-	    0, G4ThreeVector(0., 0., target_distance +
-	                                 TargetContainerCap_Thickness +
-	                                 Al1_thickness + Co1_thickness +
-	                                 Fe1_thickness + 0.5 * Al2_thickness),
-	    Al2_Logical, "Al2", world_log, 0, 0);
+	//G4Tubs *Al2_Solid = new G4Tubs("Al2_Solid", 0. * mm, target_radius,
+	                               //Al2_thickness * 0.5, 0., twopi);
+	//G4LogicalVolume *Al2_Logical =
+	    //new G4LogicalVolume(Al2_Solid, Al, "Al2_Logical");
+	//G4VisAttributes *Al2_vis = new G4VisAttributes(grey);
+	//Al2_Logical->SetVisAttributes(Al2_vis);
+	//new G4PVPlacement(
+	    //0, G4ThreeVector(0., 0., target_distance +
+	                                 //TargetContainerCap_Thickness +
+	                                 //Al1_thickness + Co1_thickness +
+	                                 //Fe1_thickness + 0.5 * Al2_thickness),
+	    //Al2_Logical, "Al2", world_log, 0, 0);
 
-	G4Tubs *Cr2O3_1_Solid = new G4Tubs("Cr2O3_1_Solid", 0. * mm, target_radius,
-	                                   Cr2O3_1_thickness * 0.5, 0., twopi);
-	G4LogicalVolume *Cr2O3_1_Logical = new G4LogicalVolume(
-	    Cr2O3_1_Solid, mat->Get_target_Cr2O3(), "Cr2O3_1_Logical");
-	G4VisAttributes *Cr2O3_1_vis = new G4VisAttributes(green);
-	Cr2O3_1_Logical->SetVisAttributes(Cr2O3_1_vis);
-	new G4PVPlacement(
-	    0,
-	    G4ThreeVector(0., 0., target_distance +
-	                              TargetContainerCap_Thickness + Al1_thickness +
-	                              Co1_thickness + Fe1_thickness +
-	                              Al2_thickness + 0.5 * Cr2O3_1_thickness),
-	    Cr2O3_1_Logical, "Cr2O3_1", world_log, 0, 0);
+	//G4Tubs *Cr2O3_1_Solid = new G4Tubs("Cr2O3_1_Solid", 0. * mm, target_radius,
+	                                   //Cr2O3_1_thickness * 0.5, 0., twopi);
+	//G4LogicalVolume *Cr2O3_1_Logical = new G4LogicalVolume(
+	    //Cr2O3_1_Solid, mat->Get_target_Cr2O3(), "Cr2O3_1_Logical");
+	//G4VisAttributes *Cr2O3_1_vis = new G4VisAttributes(green);
+	//Cr2O3_1_Logical->SetVisAttributes(Cr2O3_1_vis);
+	//new G4PVPlacement(
+	    //0,
+	    //G4ThreeVector(0., 0., target_distance +
+	                              //TargetContainerCap_Thickness + Al1_thickness +
+	                              //Co1_thickness + Fe1_thickness +
+	                              //Al2_thickness + 0.5 * Cr2O3_1_thickness),
+	    //Cr2O3_1_Logical, "Cr2O3_1", world_log, 0, 0);
 
-	G4Tubs *Sn_Solid = new G4Tubs("Sn_Solid", 0. * mm, target_radius,
-	                              Sn_thickness * 0.5, 0., twopi);
-	G4LogicalVolume *Sn_Logical =
-	    new G4LogicalVolume(Sn_Solid, mat->Get_target_Sn(), "Sn_Logical");
-	G4VisAttributes *Sn_vis = new G4VisAttributes(yellow);
-	Sn_Logical->SetVisAttributes(Sn_vis);
-	new G4PVPlacement(
-	    0, G4ThreeVector(0., 0., target_distance +
-	                                 TargetContainerCap_Thickness +
-	                                 Al1_thickness + Co1_thickness +
-	                                 Fe1_thickness + Al2_thickness +
-	                                 Cr2O3_1_thickness + 0.5 * Sn_thickness),
-	    Sn_Logical, "Sn", world_log, 0, 0);
+	//G4Tubs *Sn_Solid = new G4Tubs("Sn_Solid", 0. * mm, target_radius,
+	                              //Sn_thickness * 0.5, 0., twopi);
+	//G4LogicalVolume *Sn_Logical =
+	    //new G4LogicalVolume(Sn_Solid, mat->Get_target_Sn(), "Sn_Logical");
+	//G4VisAttributes *Sn_vis = new G4VisAttributes(yellow);
+	//Sn_Logical->SetVisAttributes(Sn_vis);
+	//new G4PVPlacement(
+	    //0, G4ThreeVector(0., 0., target_distance +
+	                                 //TargetContainerCap_Thickness +
+	                                 //Al1_thickness + Co1_thickness +
+	                                 //Fe1_thickness + Al2_thickness +
+	                                 //Cr2O3_1_thickness + 0.5 * Sn_thickness),
+	    //Sn_Logical, "Sn", world_log, 0, 0);
 
-	G4Tubs *Cr2O3_2_Solid = new G4Tubs("Cr2O3_2_Solid", 0. * mm, target_radius,
-	                                   Cr2O3_2_thickness * 0.5, 0., twopi);
-	G4LogicalVolume *Cr2O3_2_Logical = new G4LogicalVolume(
-	    Cr2O3_2_Solid, mat->Get_target_Cr2O3(), "Cr2O3_2_Logical");
-	G4VisAttributes *Cr2O3_2_vis = new G4VisAttributes(green);
-	Cr2O3_2_Logical->SetVisAttributes(Cr2O3_2_vis);
-	new G4PVPlacement(
-	    0,
-	    G4ThreeVector(0., 0., target_distance +
-	                              TargetContainerCap_Thickness + Al1_thickness +
-	                              Co1_thickness + Fe1_thickness +
-	                              Al2_thickness + Cr2O3_1_thickness +
-	                              Sn_thickness + 0.5 * Cr2O3_2_thickness),
-	    Cr2O3_2_Logical, "Cr2O3_2", world_log, 0, 0);
+	//G4Tubs *Cr2O3_2_Solid = new G4Tubs("Cr2O3_2_Solid", 0. * mm, target_radius,
+	                                   //Cr2O3_2_thickness * 0.5, 0., twopi);
+	//G4LogicalVolume *Cr2O3_2_Logical = new G4LogicalVolume(
+	    //Cr2O3_2_Solid, mat->Get_target_Cr2O3(), "Cr2O3_2_Logical");
+	//G4VisAttributes *Cr2O3_2_vis = new G4VisAttributes(green);
+	//Cr2O3_2_Logical->SetVisAttributes(Cr2O3_2_vis);
+	//new G4PVPlacement(
+	    //0,
+	    //G4ThreeVector(0., 0., target_distance +
+	                              //TargetContainerCap_Thickness + Al1_thickness +
+	                              //Co1_thickness + Fe1_thickness +
+	                              //Al2_thickness + Cr2O3_1_thickness +
+	                              //Sn_thickness + 0.5 * Cr2O3_2_thickness),
+	    //Cr2O3_2_Logical, "Cr2O3_2", world_log, 0, 0);
 
-	G4Tubs *Al3_Solid = new G4Tubs("Al3_Solid", 0. * mm, target_radius,
-	                               Al3_thickness * 0.5, 0., twopi);
-	G4LogicalVolume *Al3_Logical =
-	    new G4LogicalVolume(Al3_Solid, Al, "Al3_Logical");
-	G4VisAttributes *Al3_vis = new G4VisAttributes(grey);
-	Al3_Logical->SetVisAttributes(Al3_vis);
-	new G4PVPlacement(
-	    0, G4ThreeVector(0., 0.,target_distance +
-	                                 TargetContainerCap_Thickness +
-	                                 Al1_thickness + Co1_thickness +
-	                                 Fe1_thickness + Al2_thickness +
-	                                 Cr2O3_1_thickness + Sn_thickness +
-	                                 Cr2O3_2_thickness + 0.5 * Al3_thickness),
-	    Al3_Logical, "Al3", world_log, 0, 0);
+	//G4Tubs *Al3_Solid = new G4Tubs("Al3_Solid", 0. * mm, target_radius,
+	                               //Al3_thickness * 0.5, 0., twopi);
+	//G4LogicalVolume *Al3_Logical =
+	    //new G4LogicalVolume(Al3_Solid, Al, "Al3_Logical");
+	//G4VisAttributes *Al3_vis = new G4VisAttributes(grey);
+	//Al3_Logical->SetVisAttributes(Al3_vis);
+	//new G4PVPlacement(
+	    //0, G4ThreeVector(0., 0.,target_distance +
+	                                 //TargetContainerCap_Thickness +
+	                                 //Al1_thickness + Co1_thickness +
+	                                 //Fe1_thickness + Al2_thickness +
+	                                 //Cr2O3_1_thickness + Sn_thickness +
+	                                 //Cr2O3_2_thickness + 0.5 * Al3_thickness),
+	    //Al3_Logical, "Al3", world_log, 0, 0);
 
-	G4Tubs *Al4_Solid = new G4Tubs("Al4_Solid", 0. * mm, target_radius,
-	                               Al4_thickness * 0.5, 0., twopi);
-	G4LogicalVolume *Al4_Logical =
-	    new G4LogicalVolume(Al4_Solid, Al, "Al4_Logical");
-	G4VisAttributes *Al4_vis = new G4VisAttributes(grey);
-	Al4_Logical->SetVisAttributes(Al4_vis);
-	new G4PVPlacement(
-	    0,
-	    G4ThreeVector(0., 0., target_distance +
-	                              TargetContainerCap_Thickness + Al1_thickness +
-	                              Co1_thickness + Fe1_thickness +
-	                              Al2_thickness + Cr2O3_1_thickness +
-	                              Sn_thickness + Cr2O3_2_thickness +
-	                              Al3_thickness + 0.5 * Al4_thickness),
-	    Al4_Logical, "Al4", world_log, 0, 0);
+	//G4Tubs *Al4_Solid = new G4Tubs("Al4_Solid", 0. * mm, target_radius,
+	                               //Al4_thickness * 0.5, 0., twopi);
+	//G4LogicalVolume *Al4_Logical =
+	    //new G4LogicalVolume(Al4_Solid, Al, "Al4_Logical");
+	//G4VisAttributes *Al4_vis = new G4VisAttributes(grey);
+	//Al4_Logical->SetVisAttributes(Al4_vis);
+	//new G4PVPlacement(
+	    //0,
+	    //G4ThreeVector(0., 0., target_distance +
+	                              //TargetContainerCap_Thickness + Al1_thickness +
+	                              //Co1_thickness + Fe1_thickness +
+	                              //Al2_thickness + Cr2O3_1_thickness +
+	                              //Sn_thickness + Cr2O3_2_thickness +
+	                              //Al3_thickness + 0.5 * Al4_thickness),
+	    //Al4_Logical, "Al4", world_log, 0, 0);
 
-	G4Tubs *Co2_Solid = new G4Tubs("Co2_Solid", 0. * mm, target_radius,
-	                               Co2_thickness * 0.5, 0., twopi);
-	G4LogicalVolume *Co2_Logical =
-	    new G4LogicalVolume(Co2_Solid, Co, "Co2_Logical");
-	G4VisAttributes *Co2_vis = new G4VisAttributes(white);
-	Co2_Logical->SetVisAttributes(Co2_vis);
-	new G4PVPlacement(
-	    0,
-	    G4ThreeVector(0., 0.,
-	                  target_distance +
-	                      TargetContainerCap_Thickness + Al1_thickness +
-	                      Co1_thickness + Fe1_thickness + Al2_thickness +
-	                      Cr2O3_1_thickness + Sn_thickness + Cr2O3_2_thickness +
-	                      Al3_thickness + Al4_thickness + 0.5 * Co2_thickness),
-	    Co2_Logical, "Co2", world_log, 0, 0);
+	//G4Tubs *Co2_Solid = new G4Tubs("Co2_Solid", 0. * mm, target_radius,
+	                               //Co2_thickness * 0.5, 0., twopi);
+	//G4LogicalVolume *Co2_Logical =
+	    //new G4LogicalVolume(Co2_Solid, Co, "Co2_Logical");
+	//G4VisAttributes *Co2_vis = new G4VisAttributes(white);
+	//Co2_Logical->SetVisAttributes(Co2_vis);
+	//new G4PVPlacement(
+	    //0,
+	    //G4ThreeVector(0., 0.,
+	                  //target_distance +
+	                      //TargetContainerCap_Thickness + Al1_thickness +
+	                      //Co1_thickness + Fe1_thickness + Al2_thickness +
+	                      //Cr2O3_1_thickness + Sn_thickness + Cr2O3_2_thickness +
+	                      //Al3_thickness + Al4_thickness + 0.5 * Co2_thickness),
+	    //Co2_Logical, "Co2", world_log, 0, 0);
 
-	G4Tubs *Fe2_Solid = new G4Tubs("Fe2_Solid", 0. * mm, target_radius,
-	                               Fe2_thickness * 0.5, 0., twopi);
-	G4LogicalVolume *Fe2_Logical =
-	    new G4LogicalVolume(Fe2_Solid, Fe, "Fe2_Logical");
-	G4VisAttributes *Fe2_vis = new G4VisAttributes(red);
-	Fe2_Logical->SetVisAttributes(Fe2_vis);
-	new G4PVPlacement(
-	    0, G4ThreeVector(0., 0.,
-	                     target_distance +
-	                         TargetContainerCap_Thickness + Al1_thickness +
-	                         Co1_thickness + Fe1_thickness + Al2_thickness +
-	                         Cr2O3_1_thickness + Sn_thickness +
-	                         Cr2O3_2_thickness + Al3_thickness + Al4_thickness +
-	                         Co2_thickness + 0.5 * Fe2_thickness),
-	    Fe2_Logical, "Fe2", world_log, 0, 0);
+	//G4Tubs *Fe2_Solid = new G4Tubs("Fe2_Solid", 0. * mm, target_radius,
+	                               //Fe2_thickness * 0.5, 0., twopi);
+	//G4LogicalVolume *Fe2_Logical =
+	    //new G4LogicalVolume(Fe2_Solid, Fe, "Fe2_Logical");
+	//G4VisAttributes *Fe2_vis = new G4VisAttributes(red);
+	//Fe2_Logical->SetVisAttributes(Fe2_vis);
+	//new G4PVPlacement(
+	    //0, G4ThreeVector(0., 0.,
+	                     //target_distance +
+	                         //TargetContainerCap_Thickness + Al1_thickness +
+	                         //Co1_thickness + Fe1_thickness + Al2_thickness +
+	                         //Cr2O3_1_thickness + Sn_thickness +
+	                         //Cr2O3_2_thickness + Al3_thickness + Al4_thickness +
+	                         //Co2_thickness + 0.5 * Fe2_thickness),
+	    //Fe2_Logical, "Fe2", world_log, 0, 0);
 
-	G4Tubs *TargetContainerCap2_Solid =
-	    new G4Tubs("TargetContainerCap2_Solid", 0. * mm,
-	               target_radius + TargetContainerWall_Thickness,
-	               TargetContainerCap_Thickness * 0.5, 0., twopi);
-	G4LogicalVolume *TargetContainerCap2_Logical = new G4LogicalVolume(
-	    TargetContainerCap2_Solid, PE, "TargetContainerCap2_Logical");
-	G4VisAttributes *TargetContainerCap2_vis = new G4VisAttributes(cyan);
-	TargetContainerCap2_Logical->SetVisAttributes(TargetContainerCap2_vis);
-	new G4PVPlacement(
-	    0, G4ThreeVector(0., 0., target_distance +
-	                                 1.5 * TargetContainerCap_Thickness +
-	                                 TargetContainerWall_Length),
-	    TargetContainerCap2_Logical, "TargetContainerCap2", world_log, 0, 0);
+	//G4Tubs *TargetContainerCap2_Solid =
+	    //new G4Tubs("TargetContainerCap2_Solid", 0. * mm,
+	               //target_radius + TargetContainerWall_Thickness,
+	               //TargetContainerCap_Thickness * 0.5, 0., twopi);
+	//G4LogicalVolume *TargetContainerCap2_Logical = new G4LogicalVolume(
+	    //TargetContainerCap2_Solid, PE, "TargetContainerCap2_Logical");
+	//G4VisAttributes *TargetContainerCap2_vis = new G4VisAttributes(cyan);
+	//TargetContainerCap2_Logical->SetVisAttributes(TargetContainerCap2_vis);
+	//new G4PVPlacement(
+	    //0, G4ThreeVector(0., 0., target_distance +
+	                                 //1.5 * TargetContainerCap_Thickness +
+	                                 //TargetContainerWall_Length),
+	    //TargetContainerCap2_Logical, "TargetContainerCap2", world_log, 0, 0);
 
+
+
+/***********************Neutron Moderator*********************/
+
+// Beginning NeutronMod-----------------------------------
+
+G4LogicalVolume *NeutronMod_Logical;
+G4Box *NeutronMod; 
+G4VisAttributes *NeutronModvis;
+
+
+
+
+NeutronMod=
+	    new G4Box("Gadoliniumtar",3*cm,3*cm,3*cm);
+ NeutronMod_Logical =
+	    new G4LogicalVolume(NeutronMod, H2O, "NeutronMod", 0, 0, 0);
+	NeutronModvis = new G4VisAttributes(blue);
+	NeutronMod_Logical->SetVisAttributes(NeutronModvis);
+
+	new G4PVPlacement(0, G4ThreeVector(trans_x , trans_y,-distcollimatortotarget+
+ 5*cm), NeutronMod_Logical, "block", world_log, 0, 0);
+//End of NeutronMod--------------------------------------------------------
+/************************Gd157-Target********************************/
+//--------------------------------
+G4LogicalVolume *Gadoliniumtar_Logical;
+G4Tubs *Gadoliniumtar; 
+G4VisAttributes *Gadoliniumtarvis;
+
+Gadoliniumtar=
+	 new G4Tubs("Fe2_Solid", 0. * mm, 1*cm,
+	                               0.8*cm * 0.5, 0., twopi);
+
+Gadoliniumtar_Logical =
+	    new G4LogicalVolume(Gadoliniumtar, H2O, "Gadoliniumtar", 0, 0, 0);
+Gadoliniumtarvis = new G4VisAttributes(red);
+Gadoliniumtar_Logical->SetVisAttributes(Gadoliniumtarvis);
+
+	new G4PVPlacement(0, G4ThreeVector(trans_x , trans_y,
+ trans_z), Gadoliniumtar_Logical, "block", world_log, 0, 0);
+//------------------------------------
 	return world_phys;
 }
-
+// /control/execute init_vis.mac
 void DetectorConstruction::ConstructSDandField() {
 
 	// Detector 1
@@ -1553,10 +1588,17 @@ void DetectorConstruction::ConstructSDandField() {
 //	SetSensitiveDetector("BGOP_4", bgop_4_SD, true);
 
 	// Target container lid which is first hit by the beam 
-	ParticleSD *targetContainer_SD = new ParticleSD("targetContainer_SD", "targetContainer_Hits");
-	targetContainer_SD->SetDetectorID(0);
-	SetSensitiveDetector("TargetContainerCap1_Logical", targetContainer_SD, true);
+	//ParticleSD *targetContainer_SD = new ParticleSD("targetContainer_SD", "targetContainer_Hits");
+	//targetContainer_SD->SetDetectorID(0);
+	//SetSensitiveDetector("TargetContainerCap1_Logical", targetContainer_SD, true);
 
+//Gadolinium-Target
+ParticleSD *GadoliniumTarget_SD = new ParticleSD("GadoliniumTarget_SD", "GadoliniumTarget_Hits");
+	GadoliniumTarget_SD->SetDetectorID(0);
+	SetSensitiveDetector("Gadoliniumtar", 	GadoliniumTarget_SD, true);
+	
+	
+	
 	// Radiator targets
 //	ParticleSD *radiatorTarget1_SD = new ParticleSD("radiatorTarget1_SD", "radiatorTarget1_Hits");
 //	radiatorTarget1_SD->SetDetectorID(4);
