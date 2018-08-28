@@ -31,7 +31,7 @@ void EnergyDepositionSD::Initialize(G4HCofThisEvent *hce) {
 	hce->AddHitsCollection(hcID, hitsCollection);
 }
 
-G4bool EnergyDepositionSD::ProcessHits(G4Step *aStep, G4TouchableHistory *) {
+G4bool EnergyDepositionSD::ProcessHits(G4Step *aStep, G4TouchableHistory *history) {
 
 	TargetHit *hit = new TargetHit();
 
@@ -49,7 +49,7 @@ G4bool EnergyDepositionSD::ProcessHits(G4Step *aStep, G4TouchableHistory *) {
 	return true;
 }
 
-void EnergyDepositionSD::EndOfEvent(G4HCofThisEvent *) {
+void EnergyDepositionSD::EndOfEvent(G4HCofThisEvent *hitCollection) {
 
 	G4int nHits = hitsCollection->entries();
 	G4double totalEnergyDeposition = 0.;

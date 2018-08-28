@@ -1,0 +1,13 @@
+
+/run/initialize
+
+/gps/particle proton
+/gps/pos/type Point
+/gps/pos/centre 0 0. 608. mm
+/gps/ang/type iso
+
+/gps/ene/type Mono
+/gps/ene/mono 100 MeV
+
+/run/printProgress 1000
+/run/beamOn 10000

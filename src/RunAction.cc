@@ -70,6 +70,7 @@ void RunAction::BeginOfRunAction(const G4Run *) {
 			if (fu->FileExists(sstr2.str())) {
 				sstr.str("");
 				sstr2.str("");
+				simcount=i;
 				continue;
 			}
 
@@ -81,7 +82,7 @@ void RunAction::BeginOfRunAction(const G4Run *) {
 		sstr2.str("");
 
 	} else {
-		analysisManager->OpenFile("master.root");
+		// analysisManager->OpenFile("master.root");
 	}
 }
 
@@ -100,3 +101,4 @@ void RunAction::SetOutputFlags(unsigned int *o_flags) {
 }
 
 unsigned int *RunAction::GetOutputFlags() { return output_flags; }
+unsigned int RunAction::simcount=0;

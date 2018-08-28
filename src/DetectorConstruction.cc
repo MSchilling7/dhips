@@ -146,13 +146,14 @@ if (i==0 || i==1 || i==2 ||i==3) {block =
 else
 	{block =
 	    new G4SubtractionSolid("block",blockwithouthole, hole);}
-logical_volume_name << "block" << i << "_Logical";
+logical_volume_name << "Collimator_block" << i << "_Logical";
   blocks_Logical[i] =
 	    new G4LogicalVolume(block, Cu, logical_volume_name.str().c_str(), 0, 0, 0);
 	blockvis = new G4VisAttributes(light_orange);
 	blocks_Logical[i]->SetVisAttributes(blockvis);
+	logical_volume_name.str("");
 
-	new G4PVPlacement(0, G4ThreeVector(trans_x , trans_y, -distcollimatortotarget-(i+0.5) * block_z+trans_z), blocks_Logical[i], "block",
+	new G4PVPlacement(0, G4ThreeVector(trans_x , trans_y, -distcollimatortotarget-(i+0.5) * block_z+trans_z), blocks_Logical[i],blocks_Logical[i]->GetName(),
 	                  world_log, 0, 0);}
 
 /************************* Beam pipe *****************/
@@ -196,6 +197,121 @@ logical_volume_name << "block" << i << "_Logical";
 
 	new G4PVPlacement(0, G4ThreeVector(0., 0., -distcollimatortotarget + trans_z -11.*block_z - beam_pipe_to_collimator - beamPipe_Large_Radius_Length - beamPipe_Small_Radius_Length + (beamPipe_Small_Radius_Length + 0.5*beamPipe_Large_Radius_Length)*0.5), beamPipe_Vacuum_Logical, "beamPipe_Vacuum", world_log, false, 0);
 
+
+/************************* Beam pipe Upstream *****************/
+G4double beam_pipe_collimator_backside_wall = distcollimatortotarget-50.*mm;
+
+	G4double beamPipe_NRF_Window_Thickness = 3*mm; // Estimated
+	G4double beamPipe_NRF_Inner_Radius = 0.5*54.*mm; // Estimated
+	G4double beamPipe_NRF_Outer_Radius = 0.5*60.*mm;
+	G4double beamPipe_NRF_Lenght       = (810.-180.)*mm;
+
+	G4double Chamber_Outer_Length = 180.*mm;
+	G4double Chamber_Inner_Length = 150.*mm;
+
+////////////////////////
+	// BeamTube
+////////////////////////// 
+	G4Tubs *beamPipe_NRF_Solid = new G4Tubs("beamPipe_NRF_Solid", beamPipe_Inner_Radius, beamPipe_NRF_Outer_Radius, beamPipe_NRF_Lenght*0.5, 0., twopi);
+
+	G4LogicalVolume *beamPipe_NRF_Logical = new G4LogicalVolume(beamPipe_NRF_Solid, PE, "beamPipe_NRF_Logical");
+	beamPipe_NRF_Logical->SetVisAttributes(green);
+
+	// new G4PVPlacement(0, G4ThreeVector(0., 0., -distcollimatortotarget+50 + trans_z + beamPipe_NRF_Lenght*0.5), beamPipe_NRF_Logical, "beamPipe_NRF_Logical", world_log, false, 0);
+
+////////////////////////
+	// Vacuum in Tube
+////////////////////////// 
+	G4Tubs *beamPipe_Vacuum_NRF_Solid = new G4Tubs("beamPipe_Vacuum_NRF_Solid", 0,beamPipe_NRF_Inner_Radius, beamPipe_NRF_Lenght*0.5, 0., twopi);
+
+	G4LogicalVolume *beamPipe_Vacuum_NRF_Logical = new G4LogicalVolume(beamPipe_Vacuum_NRF_Solid, VACUUM, "beamPipe_Vacuum_NRF_Logical");
+	beamPipe_Vacuum_NRF_Logical->SetVisAttributes(white);
+
+	// new G4PVPlacement(0, G4ThreeVector(0., 0., -distcollimatortotarget+50 + trans_z + beamPipe_NRF_Lenght*0.5), beamPipe_Vacuum_NRF_Logical, "beamPipe_Vacuum_NRF_Logical", beamPipe_NRF_Logical, false, 0);
+
+////////////////////////
+	// Lid of Tube
+////////////////////////// 
+	G4Tubs *beamPipe_NRF_Lid_Solid = new G4Tubs("beamPipe_NRF_Lid_Solid", 0., beamPipe_NRF_Inner_Radius, beamPipe_NRF_Window_Thickness*0.5, 0., twopi);
+
+	G4LogicalVolume *beamPipe_NRF_Lid_Logical = new G4LogicalVolume(beamPipe_NRF_Lid_Solid, PE, "beamPipe_NRF_Lid_Logical");
+	beamPipe_NRF_Lid_Logical->SetVisAttributes(green);
+
+	// new G4PVPlacement(0, G4ThreeVector(0., 0., -distcollimatortotarget+50 +trans_z+beamPipe_NRF_Window_Thickness*0.5), beamPipe_NRF_Lid_Logical, "beamPipe_NRF_Lid_Logical", world_log, false, 0);
+
+////////////////////////
+	// Chamber 
+////////////////////////// 
+	G4Box *Chamber_Block_Solid=new G4Box("Chamber_Block_Solid",Chamber_Outer_Length*0.5,Chamber_Outer_Length*0.5, Chamber_Outer_Length*0.5);
+  	G4LogicalVolume* Chamber_Block_Logical = new G4LogicalVolume(Chamber_Block_Solid, VACUUM, "Chamber_Block_Logical", 0, 0, 0);
+	Chamber_Block_Logical->SetVisAttributes(green);
+
+	// new G4PVPlacement(0, G4ThreeVector(0 , 0, -distcollimatortotarget+50 + trans_z + beamPipe_NRF_Lenght+Chamber_Inner_Length*0.5), Chamber_Block_Logical, "Chamber_Block", world_log, 0, 0);
+
+//////////////////////////
+	// Vacuum in Chamber
+////////////////////////// 
+	G4Box *Chamber_Vacuum_Block_Solid=new G4Box("Chamber_Vacuum_Block_Solid",Chamber_Inner_Length*0.5,Chamber_Inner_Length*0.5, Chamber_Inner_Length*0.5);
+  	G4LogicalVolume* Chamber_Vacuum_Block_Logical = new G4LogicalVolume(Chamber_Vacuum_Block_Solid, VACUUM, "Chamber_Vacuum_Block_Logical", 0, 0, 0);
+	Chamber_Vacuum_Block_Logical->SetVisAttributes(white);
+
+	// new G4PVPlacement(0, G4ThreeVector(0 , 0, -distcollimatortotarget+50 + trans_z + beamPipe_NRF_Lenght+Chamber_Inner_Length*0.5), Chamber_Vacuum_Block_Logical, "Chamber_Vacuum_Block", world_log, 0, 0);
+
+////////////////////////
+	// Deuterium Target
+////////////////////////// 
+	G4double D_Thickness = 10*mm;
+	G4double D_Radius    = 20*mm;
+
+	G4Tubs *D_Target_Solid= new G4Tubs("D_Target", 0, D_Radius, D_Thickness*0.5, 0., twopi);
+
+	// G4LogicalVolume *D_Target_Logical = new G4LogicalVolume(D_Target_Solid, mat->Get_D_Polystyrol(), "D_Target_Logical");
+	G4LogicalVolume *D_Target_Logical = new G4LogicalVolume(D_Target_Solid, Pb, "D_Target_Logical");
+	D_Target_Logical->SetVisAttributes(red);
+
+	G4RotationMatrix* D_Rotate=new G4RotationMatrix();
+	D_Rotate->rotateX(-45*deg);
+	D_Rotate->rotateY(45*deg);
+
+	// new G4PVPlacement(D_Rotate, G4ThreeVector(0 , 0, -distcollimatortotarget+50 + trans_z + beamPipe_NRF_Lenght+Chamber_Inner_Length*0.5), D_Target_Logical, "D_Target", Chamber_Vacuum_Block_Logical, 0, 0);
+
+//////////////////////////
+// 
+// Si-Detector
+//
+//////////////////////////
+
+	G4double Si_Radius = 13.81*mm; //coresponding to 600mm^2 active area
+	G4double Si_Thickness=10*mm;
+
+	G4double Si_Radius_Shield = 36.1*mm; 
+	G4double Si_Thickness_Shield=36*mm;
+
+	G4Tubs* Si_Radius_Shield_Solid=new G4Tubs("Si_Radius_Shield_Solid", 0., Si_Radius_Shield, Si_Thickness_Shield*0.5, 0., twopi);
+	G4LogicalVolume *Si_Radius_Shield_Logical = new G4LogicalVolume(Si_Radius_Shield_Solid, Al, "Si_Radius_Shield_Logical");
+	Si_Radius_Shield_Logical->SetVisAttributes(blue);
+
+	G4RotationMatrix* Si_Rotate=new G4RotationMatrix();
+	Si_Rotate->rotateY(90*deg);
+
+	// new G4PVPlacement(Si_Rotate, G4ThreeVector(40.5*mm+Si_Thickness_Shield*0.5 , 0, -distcollimatortotarget+50 + trans_z + beamPipe_NRF_Lenght+Chamber_Inner_Length*0.5), Si_Radius_Shield_Logical, "Si_Radius_Shield", world_log, 0, 0);
+
+	G4Tubs* Si_Detector_Solid=new G4Tubs("Si_Detector_Solid", 0., Si_Radius, Si_Thickness*0.5, 0., twopi);
+	G4LogicalVolume *Si_Detector_Logical = new G4LogicalVolume(Si_Detector_Solid, VACUUM, "Si_Detector_Logical");
+	Si_Detector_Logical->SetVisAttributes(orange);
+
+	// new G4PVPlacement(Si_Rotate, G4ThreeVector(40.5*mm+Si_Thickness*0.5 , 0, -distcollimatortotarget+50 + trans_z + beamPipe_NRF_Lenght+Chamber_Inner_Length*0.5), Si_Detector_Logical, "Si_Detector", world_log, 0, 0);
+
+
+/*Pipe*/	    	new G4PVPlacement(0, G4ThreeVector(0., 0., -distcollimatortotarget+50 + trans_z + beamPipe_NRF_Lenght*0.5), beamPipe_NRF_Logical, "beamPipe_NRF_Logical", world_log, false, 0);
+/*Pipe Vacuum*/		new G4PVPlacement(0, G4ThreeVector(0., 0., -distcollimatortotarget+50 + trans_z + beamPipe_NRF_Lenght*0.5), beamPipe_Vacuum_NRF_Logical, "beamPipe_Vacuum_NRF_Logical", world_log, false, 0);
+/*Lid*/     		new G4PVPlacement(0, G4ThreeVector(0., 0., -distcollimatortotarget+50 +trans_z+beamPipe_NRF_Window_Thickness*0.5), beamPipe_NRF_Lid_Logical, "beamPipe_NRF_Lid_Logical", world_log, false, 0);
+/*Chamber*/ 		new G4PVPlacement(0, G4ThreeVector(0 , 0, -distcollimatortotarget+50 + trans_z + beamPipe_NRF_Lenght+Chamber_Inner_Length*0.5), Chamber_Block_Logical, "Chamber_Block", world_log, 0, 0);
+/*Chamber Vaccum*/	new G4PVPlacement(0, G4ThreeVector(0 , 0, 0), Chamber_Vacuum_Block_Logical, "Chamber_Vacuum_Block", Chamber_Block_Logical, 0, 0);
+/*D_Target*/		new G4PVPlacement(D_Rotate, G4ThreeVector(0 , 0, 0), D_Target_Logical, "D_Target", Chamber_Vacuum_Block_Logical, 0, 0);
+/*Si Shield*/		new G4PVPlacement(Si_Rotate, G4ThreeVector(40.5*mm+Si_Thickness_Shield*0.5 , 0, 0), Si_Radius_Shield_Logical, "Si_Radius_Shield", Chamber_Vacuum_Block_Logical, 0, 0);
+/*Si*/				new G4PVPlacement(Si_Rotate, G4ThreeVector(40.5*mm+Si_Thickness*0.5 , 0, 0), Si_Detector_Logical, "Si_Detector", Chamber_Vacuum_Block_Logical, 0, 0);
+
 /************************* Radiator targets *****************/
 
 	// Distance from the entrance of the collimator to the side of the radiator target holder that faces the collimator
@@ -236,7 +352,7 @@ logical_volume_name << "block" << i << "_Logical";
 	G4RotationMatrix *rotNRFTargetHolder1 = new G4RotationMatrix();
 	rotNRFTargetHolder1->rotateY(180.*deg);
 
-	new G4PVPlacement(rotNRFTargetHolder1, G4ThreeVector(0., 0., 0.), nrf_Target_Holder_Logical1, "nrf_Target_Holder1", world_log, false, 0);
+	// new G4PVPlacement(rotNRFTargetHolder1, G4ThreeVector(0., 0., 0.), nrf_Target_Holder_Logical1, "nrf_Target_Holder1", world_log, false, 0);
 
 	G4Tubs *nrf_Target_Holder_Solid2 = new G4Tubs("nrf_Target_Holder_Solid2", nrf_Target_Holder_Inner_Radius, nrf_Target_Holder_Outer_Radius, nrf_Target_Holder_Thickness*0.5, nrf_Target_Holder_Angle_Min2, nrf_Target_Holder_Angle_Max2);
 
@@ -247,7 +363,7 @@ logical_volume_name << "block" << i << "_Logical";
 	rotNRFTargetHolder2->rotateX(180.*deg);
 	rotNRFTargetHolder2->rotateY(180.*deg);
 
-	new G4PVPlacement(rotNRFTargetHolder2, G4ThreeVector(0., 0., 0.), nrf_Target_Holder_Logical2, "nrf_Target_Holder2", world_log, false, 0);
+	// new G4PVPlacement(rotNRFTargetHolder2, G4ThreeVector(0., 0., 0.), nrf_Target_Holder_Logical2, "nrf_Target_Holder2", world_log, false, 0);
 
 	G4RotationMatrix *xRotPole = new G4RotationMatrix();
 	xRotPole->rotateX(90.*deg);
@@ -257,7 +373,7 @@ logical_volume_name << "block" << i << "_Logical";
 	G4LogicalVolume *nrf_Target_Holder_Pole_Logical = new G4LogicalVolume(nrf_Target_Holder_Pole_Solid, Al, "nrf_Target_Holder_Pole_Logical");
 	nrf_Target_Holder_Pole_Logical->SetVisAttributes(grey);
 
-	new G4PVPlacement(xRotPole, G4ThreeVector(0., -nrf_Target_Holder_Outer_Radius - nrf_Target_Holder_Pole_Length*0.5, 0.), nrf_Target_Holder_Pole_Logical, "nrf_Target_Holder_Pole", world_log, false, 0);
+	// new G4PVPlacement(xRotPole, G4ThreeVector(0., -nrf_Target_Holder_Outer_Radius - nrf_Target_Holder_Pole_Length*0.5, 0.), nrf_Target_Holder_Pole_Logical, "nrf_Target_Holder_Pole", world_log, false, 0);
 
 /************************* Red Boxes for Orientation *****************/
 
@@ -467,7 +583,7 @@ block31 =
 	block31_Logical->SetVisAttributes(block31vis);
 	
 		new G4PVPlacement(0, G4ThreeVector(-45*cm+trans_x , trans_y,-distcollimatortotarget-
-	97.5*cm+31.0*cm+trans_z), block31_Logical, "block", world_log, 0, 0);
+	97.5*cm+31.0*cm+trans_z), block31_Logical, "collimator_Lead_right_front", world_log, 0, 0);
 //End Block 31---------------------------------------
 
 
@@ -536,7 +652,7 @@ new G4SubtractionSolid("block32minusDetector1-subcase_Solid12",block32minusDetec
 	block32_Logical->SetVisAttributes(block32vis);
 	
 		new G4PVPlacement(0, G4ThreeVector(disttoendblock32+13.75*cm +trans_x, trans_y,-distcollimatortotarget-
-	95*cm+12*cm+90.5*cm+trans_z), block32_Logical, "block", world_log, 0, 0);
+	95*cm+12*cm+90.5*cm+trans_z), block32_Logical, "collimator_Lead_right_back", world_log, 0, 0);
 
 
 //End Block 32---------------------------------------
@@ -556,7 +672,7 @@ block33 =
 	block33_Logical->SetVisAttributes(block33vis);
 	
 		new G4PVPlacement(0, G4ThreeVector(-30*cm+trans_x , 0+trans_y,
-		-38*cm+2.5*cm-distcollimatortotarget+trans_z), block33_Logical, "block", world_log, 0, 0);
+		-38*cm+2.5*cm-distcollimatortotarget+trans_z), block33_Logical, "collomator_Lead_right_back", world_log, 0, 0);
 //End Block 33---------------------------------------
 
 
@@ -567,14 +683,14 @@ G4Box *block41;
 G4VisAttributes *block41vis;
 
 block41 =
-	    new G4Box("block41",55*cm+45*cm,15*cm, 90.5*cm);
+	    new G4Box("block41",180*cm,10*cm,120*cm);
 
   block41_Logical =
 	    new G4LogicalVolume(block41, Pb, "block41_Logical", 0, 0, 0);
 	block41vis = new G4VisAttributes(grey);
 	block41_Logical->SetVisAttributes(block41vis);
 	
-		new G4PVPlacement(0, G4ThreeVector(45*cm+trans_x , 40.*cm+trans_y,0-distcollimatortotarget-95*cm+90.5*cm+trans_z), block41_Logical, "block", world_log, 0, 0);
+		new G4PVPlacement(0, G4ThreeVector(trans_x ,+35.*cm+trans_y,-distcollimatortotarget-95*cm+90.5*cm+trans_z), block41_Logical, "ceiling_Lead", world_log, 0, 0);
 //End Block 41---------------------------------------
 
 
@@ -585,14 +701,14 @@ G4Box *block51;
 G4VisAttributes *block51vis;
 
 block51 =
-	    new G4Box("block51",180*cm,10*cm, 90.5*cm);
+	    new G4Box("block51",180*cm,10*cm, 120*cm);
 
   block51_Logical =
 	    new G4LogicalVolume(block51, Pb, "block51_Logical", 0, 0, 0);
 	block51vis = new G4VisAttributes(grey);
 	block51_Logical->SetVisAttributes(block51vis);
 	
-		new G4PVPlacement(0, G4ThreeVector(trans_x , -35.*cm+trans_y,-distcollimatortotarget-95*cm+90.5*cm+trans_z), block51_Logical, "block", world_log, 0, 0);
+		new G4PVPlacement(0, G4ThreeVector(trans_x , -35.*cm+trans_y,-distcollimatortotarget-95*cm+90.5*cm+trans_z), block51_Logical, "floor_Lead", world_log, 0, 0);
 //End Block 51---------------------------------------
 
 //Chamber on the right side
@@ -611,8 +727,8 @@ block61 =
 	block61vis = new G4VisAttributes(leadcolor);
 	block61_Logical->SetVisAttributes(block61vis);
 	
-		new G4PVPlacement(0, G4ThreeVector(-40.*cm-40*cm+trans_x ,-25*cm+12.5*cm+trans_y,-distcollimatortotarget-
-	95*cm-6*cm+90.5*cm+trans_z), block61_Logical, "block", world_log, 0, 0);
+		// new G4PVPlacement(0, G4ThreeVector(-40.*cm-26*cm-trans_x ,-25*cm+12.5*cm+trans_y,-distcollimatortotarget-
+	// 95*cm-6*cm+90.5*cm+trans_z), block61_Logical, "Det1_Lead_downstream", world_log, 0, 0);
 //End Block 61---------------------------------------
 
 // The second wall. It is 6 behind the Cone, 10cm deep and 25cm high. It stars
@@ -630,8 +746,8 @@ block62 =
 	block62vis = new G4VisAttributes(leadcolor);
 	block62_Logical->SetVisAttributes(block62vis);
 	
-		new G4PVPlacement(0, G4ThreeVector(-40.*cm-40*cm+trans_x , -25*cm+12.5*cm+trans_y,-distcollimatortotarget-
-	95*cm-6*cm+90.5*cm+43*cm+trans_z), block62_Logical, "block", world_log, 0, 0);
+		// new G4PVPlacement(0, G4ThreeVector(-40.*cm-26*cm+trans_x , -25*cm+12.5*cm+trans_y,-distcollimatortotarget-
+	// 95*cm-6*cm+90.5*cm+43*cm+trans_z), block62_Logical, "Det1_Lead_upstream", world_log, 0, 0);
 //End Block 62---------------------------------------
 
 
@@ -652,7 +768,7 @@ block71 =
 	block71_Logical->SetVisAttributes(block71vis);
 	
 		new G4PVPlacement(0, G4ThreeVector(45.*cm+trans_x , trans_y,-distcollimatortotarget-
-	95*cm+28.5*cm+trans_z), block71_Logical, "block", world_log, 0, 0);
+	95*cm+28.5*cm+trans_z), block71_Logical, "collimator_Lead_left_front", world_log, 0, 0);
 //End Block 71---------------------------------------
 
 //Left Wall closing the chamber off. It starts 37cm behind the right wall and runs
@@ -672,7 +788,7 @@ block72 =
 	block72_Logical->SetVisAttributes(block72vis);
 	
 		new G4PVPlacement(0, G4ThreeVector(165.*cm+trans_x , trans_y,-distcollimatortotarget-
-	95*cm+37*cm+72*cm+trans_z), block72_Logical, "block", world_log, 0, 0);
+	95*cm+37*cm+72*cm+trans_z), block72_Logical, "casle_left_wall_Lead", world_log, 0, 0);
 //End Block 72---------------------------------------
 
 // A Block auf Lead sitting in front of the entrance of the chamber.
@@ -691,7 +807,7 @@ block73 =
 	block73_Logical->SetVisAttributes(block73vis);
 	
 		new G4PVPlacement(0, G4ThreeVector(55.*cm+50*cm+trans_x , -25.*cm+2.5*cm+trans_y,-distcollimatortotarget-
-	95*cm+37*cm+15*cm+trans_z), block73_Logical, "block", world_log, 0, 0);
+	95*cm+37*cm+15*cm+trans_z), block73_Logical, "castle_front_wall_Lead", world_log, 0, 0);
 //End Block 73---------------------------------------
 
 // Lead behind the cones.It is is 19cm deep and has a 90 degree angle with the wall behind it.
@@ -703,15 +819,15 @@ G4Box *block74;
 G4VisAttributes *block74vis;
 
 block74 =
-	    new G4Box("block74",53/2*cm+0.5*cm,25*cm, 9.5*cm); 
+	    new G4Box("block74",27*cm,25*cm, 9.5*cm); 
 
   block74_Logical =
 	    new G4LogicalVolume(block74, Pb, "block74_Logical", 0, 0, 0);
 	block74vis = new G4VisAttributes(leadcolor);
 	block74_Logical->SetVisAttributes(block74vis);
 	
-		new G4PVPlacement(0, G4ThreeVector(14*cm+trans_x ,trans_y, 41.5*cm-distcollimatortotarget
-+trans_z), block74_Logical, "block", world_log, 0, 0);
+		new G4PVPlacement(0, G4ThreeVector(26*cm+trans_x + 27*cm*0.5,trans_y, 41.5*cm-distcollimatortotarget
++trans_z), block74_Logical, "pol_Lead_upstream", world_log, 0, 0);
 //End Block 74---------------------------------------
 
 
@@ -853,26 +969,26 @@ new G4SubtractionSolid("block75minusDetector2pol-subcase_Solidpol2",block75minus
 	
 		new G4PVPlacement(0, G4ThreeVector(17.5*cm+trans_x ,trans_y,
 		 -distcollimatortotarget+14.55/2*cm-35*cm
-	+trans_z), block75_Logical, "block", world_log, 0, 0);
+	+trans_z), block75_Logical, "pol_and_det2_collimator", world_log, 0, 0);
 
 
 
 //Wall behind target
 //Beginning Block 81-------------------------------------
-G4LogicalVolume *block81_Logical;
-G4Box *block81; 
-G4VisAttributes *block81vis;
+// G4LogicalVolume *block81_Logical;
+// G4Box *block81; 
+// G4VisAttributes *block81vis;
 
-block81 =
-	    new G4Box("block81",160*cm,25*cm,20*cm);
+// block81 =
+// 	    new G4Box("block81",160*cm,25*cm,20*cm);
 
-  block81_Logical =
-	    new G4LogicalVolume(block81, Pb, "block81_Logical", 0, 0, 0);
-	block81vis = new G4VisAttributes(grey);
-	block81_Logical->SetVisAttributes(block81vis);
+//   block81_Logical =
+// 	    new G4LogicalVolume(block81, Pb, "block81_Logical", 0, 0, 0);
+// 	block81vis = new G4VisAttributes(grey);
+// 	block81_Logical->SetVisAttributes(block81vis);
 	
-		new G4PVPlacement(0, G4ThreeVector(trans_x , trans_y,71*cm-distcollimatortotarget
-	+trans_z ), block81_Logical, "block", world_log, 0, 0);
+// 		new G4PVPlacement(0, G4ThreeVector(trans_x , trans_y,71*cm-distcollimatortotarget
+// 	+trans_z ), block81_Logical, "block", world_log, 0, 0);
 //End Block 81---------------------------------------
 
 /************************* Detector 1*****************/
@@ -893,7 +1009,7 @@ block81 =
 //Get_Logical ersetzt werden.
  //G4LogicalVolume* crystal1_Logical = germaniumDetector1->Get_Logical();
 
-  new G4PVPlacement(rm1, germaniumDetector1_Position, germaniumDetector1_Logical, "Germanium1_TUD", world_log, false, 0);
+  // new G4PVPlacement(rm1, germaniumDetector1_Position, germaniumDetector1_Logical, "Germanium1_TUD", world_log, false, 0);
 
 
 
@@ -909,7 +1025,7 @@ block81 =
   
  // G4LogicalVolume* bgoCrystal1_Logical = bgo1->Get_Crystal_Logical();
   
-  new G4PVPlacement(rm1, bgo1_Position, bgo1_Logical, "bgo1", world_log, false, 0);
+  // new G4PVPlacement(rm1, bgo1_Position, bgo1_Logical, "bgo1", world_log, false, 0);
 
 
 
@@ -1016,7 +1132,7 @@ block92 =
 	block92_Logical->SetVisAttributes(block92vis);
 	
 	new G4PVPlacement(0, G4ThreeVector(+8.75*cm+trans_x , trans_y,-distcollimatortotarget-
-	+19*cm+1.131*cm+trans_z ), block92_Logical, "block", world_log, 0, 0);
+	+19*cm+1.131*cm+trans_z ), block92_Logical, "collimator_Lead_left_back", world_log, 0, 0);
 
 
 
@@ -1103,7 +1219,7 @@ G4VisAttributes *copperfilter1vis;
 	copperfilter1vis = new G4VisAttributes(orange);
 	copperfilter1_Logical->SetVisAttributes(copperfilter1vis);
   
-  new G4PVPlacement(rm1, copperfilter1_Position, copperfilter1_Logical, "copperfilter1", world_log, false, 0);
+  // new G4PVPlacement(rm1, copperfilter1_Position, copperfilter1_Logical, "copperfilter1", world_log, false, 0);
 //End of Copper-Filter for Det1
 //Beginning Copper-Filter for Det2
 
@@ -1175,7 +1291,7 @@ G4VisAttributes *leadfilter1vis;
 	leadfilter1vis = new G4VisAttributes(leadcolor);
 	leadfilter1_Logical->SetVisAttributes(leadfilter1vis);
   
-  new G4PVPlacement(rm1, leadfilter1_Position, leadfilter1_Logical, "leadfilter1", world_log, false, 0);
+  // new G4PVPlacement(rm1, leadfilter1_Position, leadfilter1_Logical, "leadfilter1", world_log, false, 0);
 //End of Lead-Filter for Det1
 //Beginning Lead-Filter for Det2
 
@@ -1481,22 +1597,22 @@ G4VisAttributes *leadfilterpolvis;
 
 // Beginning NeutronMod-----------------------------------
 
-G4LogicalVolume *NeutronMod_Logical;
-G4Box *NeutronMod; 
-G4VisAttributes *NeutronModvis;
+// G4LogicalVolume *NeutronMod_Logical;
+// G4Box *NeutronMod; 
+// G4VisAttributes *NeutronModvis;
 
 
 
 
-NeutronMod=
-	    new G4Box("Gadoliniumtar",3*cm,3*cm,3*cm);
- NeutronMod_Logical =
-	    new G4LogicalVolume(NeutronMod, H2O, "NeutronMod", 0, 0, 0);
-	NeutronModvis = new G4VisAttributes(blue);
-	NeutronMod_Logical->SetVisAttributes(NeutronModvis);
+// NeutronMod=
+// 	    new G4Box("Gadoliniumtar",3*cm,3*cm,3*cm);
+//  NeutronMod_Logical =
+// 	    new G4LogicalVolume(NeutronMod, H2O, "NeutronMod", 0, 0, 0);
+// 	NeutronModvis = new G4VisAttributes(blue);
+// 	NeutronMod_Logical->SetVisAttributes(NeutronModvis);
 
-	new G4PVPlacement(0, G4ThreeVector(trans_x , trans_y,-distcollimatortotarget+
- 5*cm), NeutronMod_Logical, "block", world_log, 0, 0);
+// 	new G4PVPlacement(0, G4ThreeVector(trans_x , trans_y,-distcollimatortotarget+
+//  5*cm), NeutronMod_Logical, "block", world_log, 0, 0);
 //End of NeutronMod--------------------------------------------------------
 /************************Gd157-Target********************************/
 //--------------------------------
@@ -1513,12 +1629,11 @@ Gadoliniumtar_Logical =
 Gadoliniumtarvis = new G4VisAttributes(red);
 Gadoliniumtar_Logical->SetVisAttributes(Gadoliniumtarvis);
 
-	new G4PVPlacement(0, G4ThreeVector(trans_x , trans_y,
- trans_z), Gadoliniumtar_Logical, "block", world_log, 0, 0);
+	// new G4PVPlacement(0, G4ThreeVector(trans_x , trans_y,
+ // trans_z), Gadoliniumtar_Logical, "Gd_Target", world_log, 0, 0);
 //------------------------------------
 	return world_phys;
 }
-// /control/execute init_vis.mac
 void DetectorConstruction::ConstructSDandField() {
 
 	// Detector 1
@@ -1592,10 +1707,10 @@ void DetectorConstruction::ConstructSDandField() {
 	//targetContainer_SD->SetDetectorID(0);
 	//SetSensitiveDetector("TargetContainerCap1_Logical", targetContainer_SD, true);
 
-//Gadolinium-Target
-ParticleSD *GadoliniumTarget_SD = new ParticleSD("GadoliniumTarget_SD", "GadoliniumTarget_Hits");
-	GadoliniumTarget_SD->SetDetectorID(0);
-	SetSensitiveDetector("Gadoliniumtar", 	GadoliniumTarget_SD, true);
+// // Gadolinium-Target
+// ParticleSD *GadoliniumTarget_SD = new ParticleSD("GadoliniumTarget_SD", "GadoliniumTarget_Hits");
+// 	GadoliniumTarget_SD->SetDetectorID(0);
+// 	SetSensitiveDetector("Gadoliniumtar", 	GadoliniumTarget_SD, true);
 	
 	
 	
@@ -1607,4 +1722,12 @@ ParticleSD *GadoliniumTarget_SD = new ParticleSD("GadoliniumTarget_SD", "Gadolin
 //	ParticleSD *radiatorTarget2_SD = new ParticleSD("radiatorTarget2_SD", "radiatorTarget2_Hits");
 //	radiatorTarget2_SD->SetDetectorID(5);
 //	SetSensitiveDetector("Target_2", radiatorTarget2_SD, true);
+
+	ParticleSD *Si_Detector_SD = new ParticleSD("Si_Detector_SD", "Si_Detector_Hits");
+	Si_Detector_SD->SetDetectorID(1);
+	SetSensitiveDetector("Si_Detector_Logical", 	Si_Detector_SD, true);
+
+	SecondarySD *D_Target_SD = new SecondarySD("D_Target_SD", "D_Target_Hits");
+	D_Target_SD->SetDetectorID(2);
+	SetSensitiveDetector("D_Target_Logical", 	D_Target_SD, true);
 }

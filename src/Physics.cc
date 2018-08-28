@@ -82,10 +82,11 @@ void Physics::ConstructParticle() {
 
 void Physics::ConstructProcess() {
 	AddTransportation();
-	ConstructEMPenelope();
-	// ConstructEMLivermore();
+	// ConstructEMPenelope();
+	ConstructEMLivermore();
 	ConstructHPNeutron();
 	ConstructChargedParticle();
+	ConstructPhotoDisintegration();
 }
 
 // Penelope Models
@@ -317,4 +318,26 @@ void Physics::ConstructChargedParticle() {
 			ph->RegisterProcess(new G4hIonisation(), particle);
 		}
 	}
+}
+
+
+void Physics::ConstructPhotoDisintegration()
+{
+
+	G4PhysicsListHelper *ph = G4PhysicsListHelper::GetPhysicsListHelper();
+	// G4ProcessManager *procMan = G4Gamma::Gamma()->GetProcessManager();
+
+	// G4ParticleTableIterator<G4String, G4ParticleDefinition *>
+	//     *particleIterator = G4ParticleTable::GetParticleTable()->GetIterator();
+	// particleIterator->reset();
+	// while ((*particleIterator)()) 
+	// {
+	// 	G4ParticleDefinition *particle = particleIterator->value();
+	// 	G4String particleName = particle->GetParticleName();
+
+	// 	if(particleName=="gamma")
+	// 	{
+	// 		ph
+	// 	}
+	// }
 }

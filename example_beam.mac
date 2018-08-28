@@ -1,18 +1,19 @@
 /run/initialize
 
-/gps/particle e-
-/gps/pos/type Beam
+/gps/particle gamma
+/gps/pos/type Point
 # Uncomment one of the two following blocks for a ...
 # ... perfectly circular beam
 	#/gps/pos/shape Circle
 	#/gps/pos/radius 1. mm
 # ... beam with a gaussian intensity profile
-	/gps/pos/sigma_x 1. mm
-	/gps/pos/sigma_y 1. mm
+#	/gps/pos/sigma_x 1. mm
+#	/gps/pos/sigma_y 1. mm
 
 # Uncomment one of the two following blocks for a ...
 # ... beam along the z-axis
-/gps/pos/centre 0. 0. -1512. mm
+#/gps/pos/centre 0. 0. -1512. mm
+/gps/pos/centre 0. 0. 0. mm
 /gps/direction 0. 0. 1.
 # ... beam that originates in (0. 0. z0) and hits the point (0. 0. z) at an angle phi (Replace phi, z0 and z in the following lines)
 #/gps/pos/centre 0. tan(z0-z) z0
@@ -22,9 +23,10 @@
 #/gps/direction 0. 0.05234 0.9986
 
 # Uncomment to give the beam a Gaussian energy distribution
-	/gps/ene/type Gauss
-	/gps/ene/sigma 0.15 MeV
+	#/gps/ene/type Gauss
+	#/gps/ene/sigma 0.15 MeV
 /gps/ene/mono 10. MeV
 
+#/tracking/verbose 1
 /run/printProgress 10000
-/run/beamOn 1000000000
+/run/beamOn 10000000

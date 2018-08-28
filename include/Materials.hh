@@ -20,6 +20,8 @@ class Materials {
 	G4Material *Get_target_Sn() { return target_Sn; }
 	G4double Get_Sn_density() { return Sn_density; }
 
+	G4Material* Get_D_Polystyrol(){return D_Polystyrol;}
+
   private:
 	// G4Material* BGO;
 	G4Material *target_TiO2;
@@ -28,6 +30,8 @@ class Materials {
 	G4double Cr2O3_density;
 	G4Material *target_Sn;
 	G4double Sn_density;
+
+	G4Material* D_Polystyrol;
 };
 
 #endif

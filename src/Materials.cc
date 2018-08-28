@@ -165,5 +165,41 @@ void Materials::ConstructMaterials() {
 	target_Sn = new G4Material(name = "enriched_Sn", density = Sn_density,
 	                           ncomponents = 1);
 	target_Sn->AddElement(enriched_Sn, natoms = 1);
+
+
+
+/////////////////////////////////
+//
+//  D_Polystyrol
+//  
+/////////////////////////////////
+
+	G4Isotope *Deuterium= new G4Isotope(name="Deuterium",z=1,n=2,a=2.01410175*g/mole);
+	G4Isotope *Hydrogen = new G4Isotope(name="Hydrogen",z=1,n=1,a=1.008*g/mole);
+
+	G4Element *H_D_mixture = new G4Element(name = "H_D_mixture", symbol = "HD", ncomponents = 2);
+	// H_D_mixture->AddIsotope(Hydrogen,abundance=0.9*perCent);
+	H_D_mixture->AddIsotope(Deuterium,abundance=99.1*perCent);
+	H_D_mixture->AddIsotope(Deuterium,abundance=100*perCent);
+
+	G4Element *natural_Carbon = nist->FindOrBuildElement("C");
+
+	G4double D_Polystyrol_Density=1.05*g/cm3;
+ 	// D_Polystyrol = new G4Material(name = "D_Polystyrol",density=D_Polystyrol_Density,ncomponents=2);
+ 	D_Polystyrol = new G4Material(name = "D_Polystyrol",density=D_Polystyrol_Density,ncomponents=1);
+ 	D_Polystyrol->AddElement(H_D_mixture,natoms = 2);
+ 	// D_Polystyrol->AddElement(natural_Carbon,natoms = 8);
+
+
+
+
+
+
+
+
+
+
+
+
 }
 

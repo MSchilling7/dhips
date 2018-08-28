@@ -15,6 +15,7 @@ class Physics : public G4VUserPhysicsList {
 	void ConstructEMLivermore();
 	void ConstructHPNeutron();
 	void ConstructChargedParticle();
+	void ConstructPhotoDisintegration();
 };
 
 #endif

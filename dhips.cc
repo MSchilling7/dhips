@@ -96,6 +96,7 @@ int main(int argc, char *argv[]) {
 #else
 		ui = new G4UIExecutive(argc, argv);
 #endif
+		UImanager->ApplyCommand("/control/execute init_vis.mac");
 		ui->SessionStart();
 		delete ui;
 	}
@@ -104,5 +105,11 @@ int main(int argc, char *argv[]) {
 		delete G4VisManager::GetConcreteInstance();
 
 	delete runManager;
+	string rootexe = "root -l -q \"OutputProcessing/makeChain.C++(";
+	rootexe+=std::to_string(arguments.nthreads);
+	rootexe+=",";
+	rootexe+=std::to_string(RunAction::simcount);
+	rootexe+=")\"";
+	system(rootexe.c_str());
 	return 0;
 }

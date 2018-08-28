@@ -28,9 +28,10 @@ class RunAction : public G4UserRunAction {
 	unsigned int GetNOutputFlags() { return n_output_flags; };
 
 	static const int n_output_flags = 10;
-
+	static unsigned int simcount;
   private:
 	unsigned int output_flags[n_output_flags];
+
 };
 
 #endif
